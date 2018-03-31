@@ -96,6 +96,8 @@ public class ControllerManager : MonoBehaviour {
 	Quaternion initialRotation;
 	bool isResetting;
     float eulerAngZ;
+	[SerializeField]
+	bool is2D;
 
 
 
@@ -112,7 +114,8 @@ public class ControllerManager : MonoBehaviour {
 
 	}
 
-	void InitializeVariables() {
+	void InitializeVariables()
+	{
 		myFieldOfView = minimumFov;
 		mainCam.m_Lens.FieldOfView = myFieldOfView;
 	}
@@ -121,13 +124,19 @@ public class ControllerManager : MonoBehaviour {
     {
 		UpdateSpeed ();
 
-		UpdateFOV ();
+		if (!is2D)
+		{
+			UpdateFOV ();
 
-		UpdateChromaticAberration ();
+			UpdateChromaticAberration ();
+		}
 
 		CheckGround ();
 
 		CheckRecenter ();
+
+		CheckFor2D ();
+
     }
 
 	void FixedUpdate()
@@ -304,6 +313,54 @@ public class ControllerManager : MonoBehaviour {
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = true;
 		}
+	}
+
+	void CheckFor2D()
+	{
+		if (gamepad.GetButtonDown ("X"))
+		{
+			if (is2D)
+			{
+				Initialize3D ();
+			}
+			else
+			{
+				Initialize2D ();
+			}
+		}
+	}
+
+	void Initialize2D()
+	{
+		is2D = true;
+		StartCoroutine(TransitionTo2D ());
+	}
+
+	IEnumerator TransitionTo2D()
+	{
+		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
+		myFieldOfView = mainCam.m_Lens.FieldOfView;
+		while (chromaticAberration.intensity > 0) {
+			chromaticAberration.intensity -= Time.deltaTime;
+			postProcess.chromaticAberration.settings = chromaticAberration;
+
+//			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
+//			myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
+//			mainCam.m_Lens.FieldOfView = myFieldOfView;
+			yield return new WaitForSeconds (Time.deltaTime);
+		}
+	}
+
+	void Initialize3D()
+	{
+		is2D = false;
+		StartCoroutine(TransitionTo3D ());
+
+	}
+
+	IEnumerator TransitionTo3D()
+	{
+
 	}
 
 }
