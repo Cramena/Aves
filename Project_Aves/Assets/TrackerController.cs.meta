@@ -1,11 +1,9 @@
 fileFormatVersion: 2
-guid: 21ebfb170970604408291b4728c5244d
-labels:
-- Controller
-- Space
-- Ship
-- Airplane
+guid: 24b19b7794c33b34ca541bb497fe497b
+timeCreated: 1522589359
+licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
   defaultReferences: []
   executionOrder: 0

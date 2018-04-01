@@ -333,20 +333,23 @@ public class ControllerManager : MonoBehaviour {
 	void Initialize2D()
 	{
 		is2D = true;
-		StartCoroutine(TransitionTo2D ());
+		StartCoroutine(TransitionTo2D (mainCam.m_Lens.FieldOfView));
 	}
 
-	IEnumerator TransitionTo2D()
+	IEnumerator TransitionTo2D(float initialFOV)
 	{
 		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
 		myFieldOfView = mainCam.m_Lens.FieldOfView;
+		float counter = 0;
 		while (chromaticAberration.intensity > 0) {
 			chromaticAberration.intensity -= Time.deltaTime;
 			postProcess.chromaticAberration.settings = chromaticAberration;
 
 //			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
 //			myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
-//			mainCam.m_Lens.FieldOfView = myFieldOfView;
+			myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
+			mainCam.m_Lens.FieldOfView = myFieldOfView;
+			counter += Time.deltaTime * 2;
 			yield return new WaitForSeconds (Time.deltaTime);
 		}
 	}
@@ -354,13 +357,13 @@ public class ControllerManager : MonoBehaviour {
 	void Initialize3D()
 	{
 		is2D = false;
-		StartCoroutine(TransitionTo3D ());
+//		StartCoroutine(TransitionTo3D ());
 
 	}
 
-	IEnumerator TransitionTo3D()
-	{
-
-	}
+//	IEnumerator TransitionTo3D()
+//	{
+//
+//	}
 
 }
