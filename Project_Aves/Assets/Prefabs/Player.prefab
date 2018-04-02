@@ -492,7 +492,7 @@ MonoBehaviour:
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
   m_Priority: 10
-  m_LookAt: {fileID: 4267902523573538}
+  m_LookAt: {fileID: 4425553482890718}
   m_Follow: {fileID: 4425553482890718}
   m_CommonLens: 1
   m_Lens:
@@ -554,8 +554,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCam: {fileID: 114006680978830640}
   postProcess: {fileID: 11400000, guid: f699f0f3fb5acd541ac96bb3f1d18164, type: 2}
-  lookAt: {fileID: 4267902523573538}
-  lookAtFinal: {fileID: 4748030352452714}
   playerIndex: 1
   deadzone: 0.2
   speed: 28

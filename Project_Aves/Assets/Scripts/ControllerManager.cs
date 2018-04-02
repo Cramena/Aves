@@ -16,7 +16,6 @@ public class ControllerManager : MonoBehaviour {
 	public CinemachineFreeLook mainCam;
 	public PostProcessingProfile postProcess;
 	public Transform lookAt;
-	public Transform lookAtFinal;
 	Rigidbody rigidbody;
 
 	[Space]
@@ -99,6 +98,7 @@ public class ControllerManager : MonoBehaviour {
     float eulerAngZ;
 	[SerializeField]
 	bool is2D;
+	bool isTransitionning;
 
 
 
@@ -107,12 +107,10 @@ public class ControllerManager : MonoBehaviour {
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
 		rigidbody = GetComponent<Rigidbody> ();
+		mainCam.m_LookAt = transform;
+		mainCam.m_Follow = transform;
 
 		InitializeVariables ();
-	}
-
-	void InitializePlayerIndex() {
-
 	}
 
 	void InitializeVariables()
@@ -132,6 +130,9 @@ public class ControllerManager : MonoBehaviour {
 			UpdateFOV ();
 
 			UpdateChromaticAberration ();
+
+			mainCam.m_LookAt = transform;
+			mainCam.m_Follow = transform;
 		}
 
 		CheckGround ();
@@ -146,7 +147,10 @@ public class ControllerManager : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		UpdateRotation ();
+		if (!isTransitionning)
+		{
+			UpdateRotation ();
+		}
 
 		Move ();
 	}
@@ -225,13 +229,11 @@ public class ControllerManager : MonoBehaviour {
 				rotation = Quaternion.LookRotation (transform.forward, Vector3.up);
 //			}
 			transform.rotation = Quaternion.Slerp (initialRotation, rotation, resetLoopingTimer);
-//			mainCam.LookAt = lookAt;
 		}
-		else 
+		else
 		{
 			isResetting = false;
 			resetLoopingTimer = 0;
-//			mainCam.LookAt = transform;
 		}
 	}
 
@@ -346,7 +348,8 @@ public class ControllerManager : MonoBehaviour {
 
 	void CheckRecenter()
 	{
-		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone) {
+		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = false;
 		}
 		else
@@ -373,37 +376,44 @@ public class ControllerManager : MonoBehaviour {
 	void Initialize2D()
 	{
 		is2D = true;
+		mainCam.m_LookAt = null;
+		mainCam.m_Follow = null;
 		StartCoroutine(TransitionTo2D (mainCam.m_Lens.FieldOfView));
 	}
 
 	IEnumerator TransitionTo2D(float initialFOV)
 	{
+		isTransitionning = true;
 		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
+		float initialAberration = chromaticAberration.intensity;
 		myFieldOfView = mainCam.m_Lens.FieldOfView;
+
+		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
+		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
+		Quaternion initialRotation = transform.rotation;
+
 		float counter = 0;
-		while (chromaticAberration.intensity > 0) {
-			chromaticAberration.intensity -= Time.deltaTime;
+		while (counter < 1)
+		{
+			chromaticAberration.intensity = Mathf.Lerp (initialAberration, 0, counter);
 			postProcess.chromaticAberration.settings = chromaticAberration;
 
 //			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
 //			myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
 			myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
 			mainCam.m_Lens.FieldOfView = myFieldOfView;
-			counter += Time.deltaTime * 2;
+
+			transform.rotation = Quaternion.Slerp (initialRotation, final2DRotation, counter);
+
+			counter += Time.deltaTime * 4;
 			yield return new WaitForSeconds (Time.deltaTime);
 		}
+		isTransitionning = false;
 	}
 
 	void Initialize3D()
 	{
 		is2D = false;
-//		StartCoroutine(TransitionTo3D ());
-
 	}
-
-//	IEnumerator TransitionTo3D()
-//	{
-//
-//	}
 
 }
