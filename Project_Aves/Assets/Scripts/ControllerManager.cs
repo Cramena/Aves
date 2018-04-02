@@ -52,6 +52,7 @@ public class ControllerManager : MonoBehaviour {
 	public float turningSlowingAmount = 3;
 	float previousSpeed = 5.0f;
 	float accelerationModifiyer;
+	float speedModifiyer;
 
 	[Space]
 	[Header("Fov variables")]
@@ -124,6 +125,8 @@ public class ControllerManager : MonoBehaviour {
     {
 		UpdateSpeed ();
 
+		AccelerateOrDecelerate ();
+
 		if (!is2D)
 		{
 			UpdateFOV ();
@@ -136,6 +139,8 @@ public class ControllerManager : MonoBehaviour {
 		CheckRecenter ();
 
 		CheckFor2D ();
+
+		UpdateRecenterHeading ();
 
     }
 
@@ -229,6 +234,23 @@ public class ControllerManager : MonoBehaviour {
 //			mainCam.LookAt = transform;
 		}
 	}
+
+
+
+	void UpdateRecenterHeading()
+	{
+		if (Mathf.Abs (gamepad.GetStick_L ().X) > deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) > deadzone)
+		{
+			mainCam.m_RecenterToTargetHeading.m_enabled = true;
+			print ("Left stick");
+		}
+		else
+		{
+			mainCam.m_RecenterToTargetHeading.m_enabled = false;
+			print ("Right stick");
+		}
+		
+	}
 		
 	void UpdateSpeed()
 	{
@@ -246,10 +268,28 @@ public class ControllerManager : MonoBehaviour {
 //			speed += -transform.forward.y * Time.deltaTime * acceleration / accelerationModifiyer - turningSlowingAmount * Time.deltaTime;
 //			speed = Mathf.Clamp (speed, minimumSpeedTurning, maximumSpeed);
 //		} else {
-			speed += -transform.forward.y * Time.deltaTime * acceleration / accelerationModifiyer;
+		speed += (-transform.forward.y + speedModifiyer) * Time.deltaTime * acceleration / accelerationModifiyer;
 			speed = Mathf.Clamp(speed, minimumSpeed, maximumSpeed);
 //		}
 
+	}
+
+	void AccelerateOrDecelerate()
+	{
+		if (gamepad.GetTrigger_L () > deadzone)
+		{
+			print ("Left Trigger");
+			speedModifiyer =- 5f;
+		}
+		else if (gamepad.GetTrigger_R () > deadzone)
+		{
+			print ("Right Trigger");
+			speedModifiyer = 5f;
+		}
+		else
+		{
+			speedModifiyer = 0;
+		}
 	}
 
 	void Move()
@@ -260,7 +300,7 @@ public class ControllerManager : MonoBehaviour {
 	void UpdateFOV()
 	{
 		myFieldOfView = mainCam.m_Lens.FieldOfView;
-		if (transform.forward.y > 0.2f)
+		if (transform.forward.y > 0.5f)
 		{
 			currentMinimumFov = minimumUpFov;
 		}
