@@ -107,8 +107,8 @@ public class ControllerManager : MonoBehaviour {
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
 		rigidbody = GetComponent<Rigidbody> ();
-		mainCam.m_LookAt = transform;
-		mainCam.m_Follow = transform;
+//		mainCam.m_LookAt = transform;
+//		mainCam.m_Follow = transform;
 
 		InitializeVariables ();
 	}
@@ -131,11 +131,11 @@ public class ControllerManager : MonoBehaviour {
 
 			UpdateChromaticAberration ();
 
-			mainCam.m_LookAt = transform;
-			mainCam.m_Follow = transform;
+//			mainCam.m_LookAt = transform;
+//			mainCam.m_Follow = transform;
 		}
 
-		CheckGround ();
+//		CheckGround ();
 
 		CheckRecenter ();
 

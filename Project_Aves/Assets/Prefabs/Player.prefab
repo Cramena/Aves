@@ -295,7 +295,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1230948693626324}
-  m_LocalRotation: {x: -0.022239918, y: -0.87949234, z: 0.04130279, w: -0.4735956}
+  m_LocalRotation: {x: -0.022243913, y: -0.8794457, z: 0.041300453, w: -0.47368225}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -322,7 +322,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1225227836242676}
-  m_LocalRotation: {x: -0.022243623, y: -0.8794389, z: 0.04130066, w: -0.4736949}
+  m_LocalRotation: {x: -0.02224302, y: -0.8794456, z: 0.04130096, w: -0.4736823}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -375,7 +375,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1290880164957532}
-  m_LocalRotation: {x: -0.022240372, y: -0.87949044, z: 0.041302554, w: -0.47359908}
+  m_LocalRotation: {x: -0.022244178, y: -0.87944573, z: 0.041300256, w: -0.4736822}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -646,7 +646,6 @@ MonoBehaviour:
   mainCam: {fileID: 114006680978830640}
   postProcess: {fileID: 11400000, guid: f699f0f3fb5acd541ac96bb3f1d18164, type: 2}
   lookAt: {fileID: 0}
-  lookAtFinal: {fileID: 0}
   playerIndex: 1
   deadzone: 0.2
   speed: 28
