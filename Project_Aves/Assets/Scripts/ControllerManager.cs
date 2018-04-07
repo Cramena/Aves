@@ -2,100 +2,338 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.PostProcessing;
 
 public class ControllerManager : MonoBehaviour {
+	
+	#region
+	[HideInInspector]
+	public x360_Gamepad gamepad;
+	private GamepadManager manager;
+	#endregion
 
-    public float speed = 5.0f;
-	private float previousSpeed = 5.0f;
-    public float rotationSpeed = 100.0f;
 
 	public CinemachineFreeLook mainCam;
-	public CinemachineFreeLook secondCam;
+	public PostProcessingProfile postProcess;
+	public Transform lookAt;
+	Rigidbody rigidbody;
 
-    public float smooth = 4.0f;
+	[Space]
 
-    [HideInInspector]
-    public float roll, yaw, pitch; //Inputs for roll, yaw, and pitch, taken from Unity's input system.
+	public int playerIndex;
+	[Tooltip("How much the player must move the stick to activate it. Too low and it will be activated when the player isn't touching it. Too high and  the player won't be able to make subtle moves.")]
+	[Range(0.1f, 0.9f)]
+	public float deadzone = 0.2f;
 
-    [SerializeField]
-    float eulerAngX;
-    [SerializeField]
-    float eulerAngY;
-    [SerializeField]
+	[Space]
+	[Header("Speed variables")]
+	[Space]
+
+	[SerializeField]
+    float speed = 5.0f;
+	[Tooltip("The speed at which speed is sped up.")]
+	[Range(0.01f, 100)]
+	public float acceleration = 15.0f;
+	[Tooltip("The minimum speed value. Must be lower than maximum speed.")]
+	[Range(1f, 100)]
+	public float minimumSpeed = 10;
+	[Tooltip("The maximum speed value. Must be higher than minimum speed.")]
+	[Range(1f, 100)]
+	public float maximumSpeed = 30;
+	[Tooltip("The minimum speed value while turning. Must be lower than maximum speed while turning.")]
+	[Range(1f, 100)]
+	public float minimumSpeedTurning = 10;
+	[Tooltip("The maximum speed value while turning. Must be higher than minimum speed while turning.")]
+	[Range(1f, 100)]
+	public float maximumSpeedTurning = 30;
+	[Tooltip("The value by which speed is slowed down when turning.")]
+	[Range(0.01f, 100)]
+	public float turningSlowingAmount = 3;
+	float previousSpeed = 5.0f;
+	float accelerationModifiyer;
+	float speedModifiyer;
+
+	[Space]
+	[Header("Fov variables")]
+	[Space]
+
+	[Tooltip("The speed at which the fov is increased.")]
+	[Range(0.01f, 10)]
+	public float fovSpeed = .5f;
+	[Tooltip("The minimum value of the fov while going up. Must be lower than minimum Fov.")]
+	[Range(1, 180)]
+	public float minimumUpFov = 20;
+	[Tooltip("The minimum value of the fov. Must be lower than maximum Fov.")]
+	[Range(1, 180)]
+	public float minimumFov = 40;
+	[Tooltip("The maximum value of the fov. Must be higher than minimum Fov.")]
+	[Range(1, 180)]
+	public float maximumFov = 70;
+
+	float currentMinimumFov;
+	float myFieldOfView;
+
+	[Space]
+	[Header("Chromatic Aberration variables")]
+	[Space]
+	[Tooltip("The maximum chromatic aberration.")]
+	[Range(0.1f, 10)]
+	public float maximumAberration = 2;
+
+	[Space]
+	[Header("Rotation variables")]
+	[Space]
+
+	//Rotation Variables
+	[Tooltip("The speed at which the bird turns.")]
+	public float turnSpeed = 2;
+	[Tooltip("The speed at which the bird's Z axis resets to zero.")]
+	public float resettingSpeed = 2;
+
+	float zRotation;
+	float loopingTimer;
+	float resetLoopingTimer;
+	Quaternion initialRotation;
+	bool isResetting;
     float eulerAngZ;
+	[SerializeField]
+	bool is2D;
+	bool isTransitionning;
 
-    float myFieldOfView;
-	float fovDeceleration = 2;
 
-	bool goingDown;
 
     void Start ()
     {
-//		mainCam = GetComponentInChildren<CinemachineFreeLook> ();
-		myFieldOfView = mainCam.m_Lens.FieldOfView;
+		manager = GamepadManager.Instance;
+		gamepad=manager.GetGamepad(playerIndex);
+		rigidbody = GetComponent<Rigidbody> ();
+		mainCam.m_LookAt = transform;
+		mainCam.m_Follow = transform;
+
+		InitializeVariables ();
+	}
+
+	void InitializeVariables()
+	{
+		myFieldOfView = minimumFov;
+		mainCam.m_Lens.FieldOfView = myFieldOfView;
 	}
 
     void Update ()
     {
-
-		UpdateRotation ();
-
 		UpdateSpeed ();
 
-		Move ();
+		AccelerateOrDecelerate ();
 
-		UpdateFOV ();
+		if (!is2D)
+		{
+			UpdateFOV ();
+
+			UpdateChromaticAberration ();
+
+			mainCam.m_LookAt = transform;
+			mainCam.m_Follow = transform;
+		}
 
 		CheckGround ();
-       
+
+		CheckRecenter ();
+
+		CheckFor2D ();
+
+		UpdateRecenterHeading ();
+
     }
+
+	void FixedUpdate()
+	{
+		if (!isTransitionning)
+		{
+			UpdateRotation ();
+		}
+
+		Move ();
+	}
 
 	void UpdateRotation()
 	{
-		eulerAngX = transform.localEulerAngles.x;
-		eulerAngY = transform.localEulerAngles.y;
 		eulerAngZ = transform.localEulerAngles.z;
-		print (eulerAngX);
-
-		if (transform.rotation.z != 0 && Input.GetAxis ("Vertical") < 0.5f && Input.GetAxis ("Horizontal") < 0.5f)
+		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone)
 		{
-			StartCoroutine("Replace");
+//			if (Mathf.Sign (gamepad.GetStick_L ().X) == -1) {
+//				zRotation = ((-gamepad.GetStick_L ().X/(1-deadzone)) * 45) - eulerAngZ;
+//			} else {
+//				zRotation = (360 + (-gamepad.GetStick_L ().X/(1-deadzone)) * 45) - eulerAngZ;
+//			}
+			if ((eulerAngZ < 180 && eulerAngZ > 45 && Mathf.Sign (gamepad.GetStick_L ().X) == -1) || (eulerAngZ > 180 && eulerAngZ < 320 && Mathf.Sign (gamepad.GetStick_L ().X) == 1))
+			{
+				zRotation = 0;
+			}
+			else
+			{
+				zRotation = -gamepad.GetStick_L ().X * turnSpeed * 2;
+			}
+
+			Quaternion yRotator = Quaternion.AngleAxis ((gamepad.GetStick_L ().X - deadzone * Mathf.Sign(gamepad.GetStick_L ().X)) * turnSpeed, Vector3.up);
+			transform.rotation = yRotator * transform.rotation;
+			Quaternion zRotator = Quaternion.AngleAxis (zRotation, transform.forward);
+			transform.rotation = zRotator * transform.rotation;
 		}
 
-		transform.Rotate((Input.GetAxis("Vertical")/1.5f) * Time.deltaTime * rotationSpeed, (Input.GetAxis("Horizontal")) * Time.deltaTime * rotationSpeed, (-Input.GetAxis("Horizontal")) * Time.deltaTime * rotationSpeed );
+		if (Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		{
+			if (loopingTimer != 0)
+			{
+				loopingTimer = 0f;
+			}
+
+			Quaternion xRotator = Quaternion.AngleAxis (gamepad.GetStick_L ().Y * turnSpeed, transform.right);
+			Quaternion rotation = Quaternion.LookRotation (xRotator * transform.forward, transform.up);
+			transform.rotation = rotation;
+		}
+		if (transform.up != Vector3.up && Mathf.Abs (gamepad.GetStick_L ().X) < deadzone && Mathf.Abs (gamepad.GetStick_L ().Y) < deadzone)
+		{
+			CheckResetZAngle ();
+		}
+		if (isResetting)
+		{
+			ResetZAngle ();
+		}
 	}
 
-	void UpdateSpeed() {
+	void CheckResetZAngle()
+	{
+		if (loopingTimer >= 1)
+		{
+			print ("Resetting");
+			resetLoopingTimer = 0;
+			initialRotation = transform.rotation;
+			isResetting = true;
+		}
+		else
+		{
+			loopingTimer += Time.fixedDeltaTime * resettingSpeed;
+		}
+	}
+
+	void ResetZAngle()
+	{
+		if (resetLoopingTimer < 1 && Mathf.Abs (gamepad.GetStick_L ().Y) < deadzone && Mathf.Abs (gamepad.GetStick_L ().X) < deadzone)
+		{
+			loopingTimer = 0;
+			resetLoopingTimer += 1.0f * Time.fixedDeltaTime;
+			Quaternion rotation;
+//			if (Mathf.Abs (transform.forward.y) > 0.3f) {
+//				rotation = Quaternion.LookRotation (new Vector3 (transform.forward.x, 0, transform.forward.z), Vector3.up);
+//			} else {
+				rotation = Quaternion.LookRotation (transform.forward, Vector3.up);
+//			}
+			transform.rotation = Quaternion.Slerp (initialRotation, rotation, resetLoopingTimer);
+		}
+		else
+		{
+			isResetting = false;
+			resetLoopingTimer = 0;
+		}
+	}
+
+
+
+	void UpdateRecenterHeading()
+	{
+		if (Mathf.Abs (gamepad.GetStick_L ().X) > deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) > deadzone)
+		{
+			mainCam.m_RecenterToTargetHeading.m_enabled = true;
+			print ("Left stick");
+		}
+		else
+		{
+			mainCam.m_RecenterToTargetHeading.m_enabled = false;
+			print ("Right stick");
+		}
+		
+	}
+		
+	void UpdateSpeed()
+	{
 		previousSpeed = speed;
-		speed += -transform.forward.y * Time.deltaTime * 4.0f;
-		speed = Mathf.Clamp(speed, 5.0f, 20.0f);
+		if (transform.forward.y < -0.1)
+		{
+			accelerationModifiyer = 1;
+		}
+		else
+		{
+			accelerationModifiyer = 2;
+		}
+
+//		if (Mathf.Abs (gamepad.GetStick_L ().X) > .7f) {
+//			speed += -transform.forward.y * Time.deltaTime * acceleration / accelerationModifiyer - turningSlowingAmount * Time.deltaTime;
+//			speed = Mathf.Clamp (speed, minimumSpeedTurning, maximumSpeed);
+//		} else {
+		speed += (-transform.forward.y + speedModifiyer) * Time.deltaTime * acceleration / accelerationModifiyer;
+			speed = Mathf.Clamp(speed, minimumSpeed, maximumSpeed);
+//		}
+
+	}
+
+	void AccelerateOrDecelerate()
+	{
+		if (gamepad.GetTrigger_L () > deadzone)
+		{
+			print ("Left Trigger");
+			speedModifiyer =- 5f;
+		}
+		else if (gamepad.GetTrigger_R () > deadzone)
+		{
+			print ("Right Trigger");
+			speedModifiyer = 5f;
+		}
+		else
+		{
+			speedModifiyer = 0;
+		}
 	}
 
 	void Move()
 	{
-		transform.position += transform.forward * Time.deltaTime * speed;
+		rigidbody.velocity =  transform.forward * speed;
 	}
 
 	void UpdateFOV()
 	{
-		if (eulerAngX > 45 && eulerAngY < 135) {
-			myFieldOfView = Mathf.Lerp (mainCam.m_Lens.FieldOfView, 90, fovDeceleration * Time.deltaTime);
-			secondCam.Priority = 15;
-			goingDown = true;
-		} else {
-			myFieldOfView = Mathf.Lerp (mainCam.m_Lens.FieldOfView, 30, fovDeceleration * Time.deltaTime);
-			secondCam.Priority = 5;
-			goingDown = false;
+		myFieldOfView = mainCam.m_Lens.FieldOfView;
+		if (transform.forward.y > 0.5f)
+		{
+			currentMinimumFov = minimumUpFov;
 		}
-		myFieldOfView = Mathf.Clamp(myFieldOfView, 30.0f, 90.0f);
+		else if (myFieldOfView >= 40)
+		{
+			currentMinimumFov = minimumFov;
+		}
+		if (accelerationModifiyer == 1)
+		{
+			myFieldOfView += Time.deltaTime * fovSpeed * speed;
+		}
+		else
+		{
+			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
+		}
+		myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
 		mainCam.m_Lens.FieldOfView = myFieldOfView;
-//		if (speed > previousSpeed) {
-//			myFieldOfView = cam.m_Lens.FieldOfView + speed * Time.deltaTime;
-//		} else {
-//			myFieldOfView = Mathf.Lerp (cam.m_Lens.FieldOfView, 30, fovDeceleration * Time.deltaTime);
-//		}
-//		myFieldOfView = Mathf.Clamp(myFieldOfView, 30.0f, 90.0f);
-//		cam.m_Lens.FieldOfView = myFieldOfView;
+	}
+
+	void UpdateChromaticAberration()
+	{
+		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
+		/*if (accelerationModifiyer == 1)
+		{*/
+		chromaticAberration.intensity = ((speed - minimumSpeed) / (maximumSpeed - minimumSpeed)) * maximumAberration;
+		/*}
+		else
+		{
+			chromaticAberration.intensity -= Time.deltaTime;
+		}*/
+		postProcess.chromaticAberration.settings = chromaticAberration;
 	}
 
 	void CheckGround()
@@ -108,23 +346,74 @@ public class ControllerManager : MonoBehaviour {
 		}
 	}
 
+	void CheckRecenter()
+	{
+		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		{
+			mainCam.m_RecenterToTargetHeading.m_enabled = false;
+		}
+		else
+		{
+			mainCam.m_RecenterToTargetHeading.m_enabled = true;
+		}
+	}
 
-    IEnumerator Replace ()
-    {
-        yield return new WaitForSeconds(1);
-        print("Done");
+	void CheckFor2D()
+	{
+		if (gamepad.GetButtonDown ("X"))
+		{
+			if (is2D)
+			{
+				Initialize3D ();
+			}
+			else
+			{
+				Initialize2D ();
+			}
+		}
+	}
 
-        Quaternion target = Quaternion.Euler (eulerAngX, eulerAngY, 0);
-        transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * smooth);
+	void Initialize2D()
+	{
+		is2D = true;
+		mainCam.m_LookAt = null;
+		mainCam.m_Follow = null;
+		StartCoroutine(TransitionTo2D (mainCam.m_Lens.FieldOfView));
+	}
 
-//        StartCoroutine("Stop");
-    }
+	IEnumerator TransitionTo2D(float initialFOV)
+	{
+		isTransitionning = true;
+		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
+		float initialAberration = chromaticAberration.intensity;
+		myFieldOfView = mainCam.m_Lens.FieldOfView;
 
-    IEnumerator Stop ()
-    {
-        yield return new WaitForSeconds(1);
+		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
+		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
+		Quaternion initialRotation = transform.rotation;
 
-        StopCoroutine("Replace");
-    }
+		float counter = 0;
+		while (counter < 1)
+		{
+			chromaticAberration.intensity = Mathf.Lerp (initialAberration, 0, counter);
+			postProcess.chromaticAberration.settings = chromaticAberration;
+
+//			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
+//			myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
+			myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
+			mainCam.m_Lens.FieldOfView = myFieldOfView;
+
+			transform.rotation = Quaternion.Slerp (initialRotation, final2DRotation, counter);
+
+			counter += Time.deltaTime * 4;
+			yield return new WaitForSeconds (Time.deltaTime);
+		}
+		isTransitionning = false;
+	}
+
+	void Initialize3D()
+	{
+		is2D = false;
+	}
 
 }
