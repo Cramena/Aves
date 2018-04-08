@@ -10916,10 +10916,9 @@ Prefab:
       propertyPath: m_Name
       value: Player (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 114646827118040732, guid: ff37b7a34c05e8e42bc7c3ba570feeb6,
-        type: 2}
-      propertyPath: m_InterpolateMovement
-      value: 1
+    - target: {fileID: 1850099321443376, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
@@ -21735,31 +21734,31 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.x
-      value: 0.0222433
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0.87944615
+      value: 0.8804149
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0.041300837
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.47368136
+      value: 0.47420415
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 100.60191
+      value: 110.31907
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 6.776025
+      value: -0.259
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 142.2922
+      value: 135.8886
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 34333e7b9602b864283772741aaa692c, type: 2}
