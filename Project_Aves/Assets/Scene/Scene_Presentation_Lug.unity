@@ -10873,6 +10873,57 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 88e633f0d94d30e4f9e98d7deefd086b, type: 3}
   m_IsPrefabParent: 0
+--- !u!1001 &598196641
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 118.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 2.59
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 130.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0.8804149
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.47420415
+      objectReference: {fileID: 0}
+    - target: {fileID: 4425553482890718, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_RootOrder
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: 1850099321443376, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+      propertyPath: m_Name
+      value: Player (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114646827118040732, guid: ff37b7a34c05e8e42bc7c3ba570feeb6,
+        type: 2}
+      propertyPath: m_InterpolateMovement
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}
+  m_IsPrefabParent: 0
 --- !u!4 &608580313 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400252, guid: 88e633f0d94d30e4f9e98d7deefd086b, type: 3}
@@ -21684,31 +21735,31 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0.0222433
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0.8804149
+      value: 0.87944615
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: -0.041300837
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.47420415
+      value: 0.47368136
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 110.31907
+      value: 100.60191
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -0.259
+      value: 6.776025
       objectReference: {fileID: 0}
     - target: {fileID: 4723695577848512, guid: 34333e7b9602b864283772741aaa692c, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 135.8886
+      value: 142.2922
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 34333e7b9602b864283772741aaa692c, type: 2}
