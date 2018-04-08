@@ -375,7 +375,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1869467841506746}
-  m_LocalRotation: {x: 0, y: 0.44619772, z: 0.89493436, w: 0}
+  m_LocalRotation: {x: 0, y: 0.44619775, z: 0.8949344, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1170,7 +1170,7 @@ MonoBehaviour:
   m_VelocityThreshold: 0.0001
   m_SnapThreshold: 20
   m_InterpolateRotation: 1
-  m_InterpolateMovement: 2
+  m_InterpolateMovement: 0.3
 --- !u!114 &114735804268788416
 MonoBehaviour:
   m_ObjectHideFlags: 1
