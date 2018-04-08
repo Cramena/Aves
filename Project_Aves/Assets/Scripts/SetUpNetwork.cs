@@ -18,6 +18,5 @@ public class SetUpNetwork : NetworkBehaviour {
 				componentsToDisable [i].enabled = false;
 			}
 		}
-
 	}
 }

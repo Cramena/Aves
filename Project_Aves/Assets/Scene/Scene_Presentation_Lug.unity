@@ -3095,7 +3095,7 @@ MonoBehaviour:
   manager: {fileID: 0}
   showGUI: 1
   offsetX: 0
-  offsetY: 0
+  offsetY: 100
 --- !u!1001 &206272072
 Prefab:
   m_ObjectHideFlags: 0
