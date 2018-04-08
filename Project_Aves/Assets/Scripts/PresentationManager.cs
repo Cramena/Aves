@@ -24,7 +24,7 @@ public class PresentationManager : MonoBehaviour {
 	void Start () {
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
-		TransitionSlides ();
+		HideSlide ();
 	}
 
 	void TransitionSlides() {
