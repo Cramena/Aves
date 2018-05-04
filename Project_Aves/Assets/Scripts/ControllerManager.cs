@@ -147,12 +147,22 @@ public class ControllerManager : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if (!isTransitionning)
-		{
+		if (!isTransitionning && !is2D) {
 			UpdateRotation ();
+		} else if (is2D) {
+			UpdateRotation2D ();
 		}
 
 		Move ();
+	}
+
+	void UpdateRotation2D() {
+		Quaternion _rotation;
+
+		Quaternion xRotator = Quaternion.AngleAxis (gamepad.GetStick_L ().Y * turnSpeed, transform.right);
+		Quaternion rotation = Quaternion.LookRotation (xRotator * transform.forward, transform.up);
+
+		transform.rotation = _rotation;
 	}
 
 	void UpdateRotation()
@@ -406,7 +416,8 @@ public class ControllerManager : MonoBehaviour {
 			transform.rotation = Quaternion.Slerp (initialRotation, final2DRotation, counter);
 
 			counter += Time.deltaTime * 4;
-			yield return new WaitForSeconds (Time.deltaTime);
+			counter = Mathf.Clamp (counter, 0, 1);
+			yield return null;
 		}
 		isTransitionning = false;
 	}
