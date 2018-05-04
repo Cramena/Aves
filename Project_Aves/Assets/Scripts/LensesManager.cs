@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
-public class LensesManager : MonoBehaviour {
+public class LensesManager : MonoBehaviour
+{
 
 	public PostProcessingProfile postProcess;
 
@@ -29,7 +30,6 @@ public class LensesManager : MonoBehaviour {
 	public int playerIndex;
 
 
-	// Use this for initialization
 	void Start ()
 	{
 		manager = GamepadManager.Instance;
@@ -68,7 +68,6 @@ public class LensesManager : MonoBehaviour {
 		postProcess.colorGrading.settings = colorGrading;
 	}
 
-	// Update is called once per frame
 	void Update ()
 	{
 		if (gamepad.GetButtonDown ("A"))
@@ -80,6 +79,7 @@ public class LensesManager : MonoBehaviour {
 			ToggleNight ();
 		}
 
+        // black and white timer (from 0 to 1)
 		if (bawTimer > 0)
 		{
 			UpdateBlackAndWhite ();
@@ -102,45 +102,19 @@ public class LensesManager : MonoBehaviour {
 			blackAndWhite = true;
 		}
 		bawTimer = 1f;
-
 	}
 
 	void ToggleNight()
 	{
 		if (night)
 		{
-//			ColorGradingModel.Settings colorGrading = postProcess.colorGrading.settings;
-//
-//			colorGrading.basic.temperature = Mathf.SmoothDamp (colorGrading.basic.temperature, 0, ref velocityFloat, 1);
-//
-//			colorGrading.channelMixer.blue = Vector3.SmoothDamp (colorGrading.channelMixer.blue, new Vector3(0, 0, 1), ref velocity, 1);
-//			colorGrading.channelMixer.green = Vector3.SmoothDamp (colorGrading.channelMixer.green, new Vector3(0, 1, 0), ref velocity, 1);
-//			colorGrading.channelMixer.red = Vector3.SmoothDamp (colorGrading.channelMixer.red, new Vector3(1, 0, 0), ref velocity, 1);
-//
-//			colorGrading.basic.saturation = Mathf.SmoothDamp (colorGrading.basic.saturation, 1, ref velocityFloat, 1);
-//
-//			postProcess.colorGrading.settings = colorGrading;
-
 			night = false;
 		}
 		else
 		{
-//			ColorGradingModel.Settings colorGrading = postProcess.colorGrading.settings;
-//
-//			colorGrading.basic.temperature = Mathf.SmoothDamp (colorGrading.basic.temperature, 100, ref velocityFloat, 1);
-//
-//			colorGrading.channelMixer.blue = Vector3.SmoothDamp (colorGrading.channelMixer.blue, new Vector3(0.2f, 0.2f, 0), ref velocity, 1);
-//			colorGrading.channelMixer.green = Vector3.SmoothDamp (colorGrading.channelMixer.green, new Vector3(0, 2, 0), ref velocity, 1);
-//			colorGrading.channelMixer.red = Vector3.SmoothDamp (colorGrading.channelMixer.red, new Vector3(2, 0, 0), ref velocity, 1);
-//
-//			colorGrading.basic.saturation = Mathf.SmoothDamp (colorGrading.basic.saturation, 2, ref velocityFloat, 1);
-//
-//			postProcess.colorGrading.settings = colorGrading;
-
 			night = true;
 		}
 		nightTimer = 1f;
-
 	}
 
 	void UpdateBlackAndWhite()
@@ -224,5 +198,4 @@ public class LensesManager : MonoBehaviour {
 
 		postProcess.colorGrading.settings = colorGrading;
 	}
-
 }
