@@ -90,6 +90,14 @@ public class ControllerManager : MonoBehaviour {
 	[Tooltip("The speed at which the bird's Z axis resets to zero.")]
 	public float resettingSpeed = 2;
 
+	[Space]
+	[Header("2D Rotation variables")]
+	[Space]
+
+	//Rotation Variables
+	[Tooltip("The speed at which the bird turns in 2D.")]
+	public float turnSpeed2D = 2;
+
 	float zRotation;
 	float loopingTimer;
 	float resetLoopingTimer;
@@ -157,12 +165,16 @@ public class ControllerManager : MonoBehaviour {
 	}
 
 	void UpdateRotation2D() {
-		Quaternion _rotation;
+		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone) {
 
-		Quaternion xRotator = Quaternion.AngleAxis (gamepad.GetStick_L ().Y * turnSpeed, transform.right);
-		Quaternion rotation = Quaternion.LookRotation (xRotator * transform.forward, transform.up);
 
-		transform.rotation = _rotation;
+			Vector3 _direction = new Vector3 (gamepad.GetStick_L ().X, gamepad.GetStick_L ().Y, 0);
+
+			Quaternion rotation = Quaternion.LookRotation (_direction);
+			transform.rotation = rotation;
+//			transform.rotation = Quaternion.Lerp (transform.rotation, rotation, turnSpeed2D * Time.deltaTime);
+
+		}
 	}
 
 	void UpdateRotation()
@@ -246,8 +258,6 @@ public class ControllerManager : MonoBehaviour {
 			resetLoopingTimer = 0;
 		}
 	}
-
-
 
 	void UpdateRecenterHeading()
 	{
