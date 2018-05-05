@@ -155,25 +155,27 @@ public class ControllerManager : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if (!isTransitionning && !is2D) {
+		if (!isTransitionning && !is2D)
+		{
 			UpdateRotation ();
-		} else if (is2D) {
+		}
+		else if (is2D)
+		{
 			UpdateRotation2D ();
 		}
 
 		Move ();
 	}
 
-	void UpdateRotation2D() {
-		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone) {
+	void UpdateRotation2D()
+	{
+		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		{
+			Vector3 direction = new Vector3(0, Mathf.Atan2(-gamepad.GetStick_L ().Y, gamepad.GetStick_L ().X) * 180 / Mathf.PI, 0);
 
-
-			Vector3 _direction = new Vector3 (gamepad.GetStick_L ().X, gamepad.GetStick_L ().Y, 0);
-
-			Quaternion rotation = Quaternion.LookRotation (_direction);
-			transform.rotation = rotation;
-//			transform.rotation = Quaternion.Lerp (transform.rotation, rotation, turnSpeed2D * Time.deltaTime);
-
+			float step = turnSpeed2D * Time.deltaTime;
+			Quaternion turnRotation = Quaternion.Euler(direction.y, 0, 0f);
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, step);
 		}
 	}
 
@@ -264,12 +266,10 @@ public class ControllerManager : MonoBehaviour {
 		if (Mathf.Abs (gamepad.GetStick_L ().X) > deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) > deadzone)
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = true;
-			print ("Left stick");
 		}
 		else
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = false;
-			print ("Right stick");
 		}
 		
 	}

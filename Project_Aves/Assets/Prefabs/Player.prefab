@@ -908,6 +908,7 @@ MonoBehaviour:
   maximumAberration: 0.5
   turnSpeed: 2
   resettingSpeed: 70
+  turnSpeed2D: 250
   is2D: 0
 --- !u!114 &114116566450243596
 MonoBehaviour:
