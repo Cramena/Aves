@@ -5,15 +5,9 @@ using UnityEngine.PostProcessing;
 
 public class LensesManager : MonoBehaviour
 {
+	// public PostProcessingProfile postProcess;
 
-	public PostProcessingProfile postProcess;
-
-	#region
-	[HideInInspector]
-	public x360_Gamepad gamepad;
-	private GamepadManager manager;
-	#endregion
-
+    /*
 	[SerializeField]
 	bool blackAndWhite;
 	float bawTimer;
@@ -26,18 +20,37 @@ public class LensesManager : MonoBehaviour
 
 	private Vector3 velocity;
 	private float velocityFloat;
+    */
 
-	public int playerIndex;
+    // Gamepad Variables
+	#region
+	[HideInInspector]
+	public x360_Gamepad gamepad;
+	private GamepadManager manager;
+    #endregion
 
+    public int playerIndex;
 
-	void Start ()
+    // Lense variables
+    List<string> lensesList = new List<string>() {"noLense", "bawLense", "nightLense"};
+    private string currentLens;
+    private int lensCounter;
+
+    void Start ()
 	{
+        // Getting the gamepad
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
 
-		InitializeSettings ();
-	}
+		// InitializeSettings ();
 
+        // Setting no lense as the initial lense
+        lensCounter = 0;
+        currentLens = lensesList[lensCounter];
+        Debug.Log(lensesList.Count);
+    }
+
+    /*
 	[ContextMenu("Reset post process values")]
 	public void InitializeSettings()
 	{
@@ -67,15 +80,49 @@ public class LensesManager : MonoBehaviour
 		postProcess.chromaticAberration.settings = chromaticAberration;
 		postProcess.colorGrading.settings = colorGrading;
 	}
+    */
 
 	void Update ()
 	{
-		if (gamepad.GetButtonDown ("A"))
-		{
-			ToggleBlackAndWhite ();
+        if (gamepad.GetButtonDown("LB"))
+        {
+            if (lensCounter <= 0)
+            {
+                lensCounter = lensesList.Count - 1;
+            }
+            else
+            {
+                lensCounter = lensCounter - 1;
+            }
+
+            currentLens = lensesList[lensCounter];
+
+            LensSwitcher(currentLens);
+        }
+
+        else if (gamepad.GetButtonDown("RB"))
+        {
+            if (lensCounter >= lensesList.Count - 1)
+            {
+                lensCounter = 0;
+            }
+            else
+            {
+                lensCounter = lensCounter + 1;
+            }
+
+            currentLens = lensesList[lensCounter];
+
+            LensSwitcher(currentLens);
+        }
+
+        /*
+        if (gamepad.GetButtonDown ("A"))
+        {
+            ToggleBlackAndWhite ();
 		}
-		if (gamepad.GetButtonDown ("B"))
-		{
+        if (gamepad.GetButtonDown ("B"))
+        {
 			ToggleNight ();
 		}
 
@@ -89,8 +136,29 @@ public class LensesManager : MonoBehaviour
 		{
 			UpdateNight ();
 		}
+        */
 	}
 
+    void LensSwitcher(string whichLense)
+    {
+        if (whichLense == "noLense")
+        {
+            Debug.Log(whichLense);
+        }
+
+        if (whichLense == "bawLense")
+        {
+
+            Debug.Log(whichLense);
+        }
+
+        if (whichLense == "nightLense")
+        {
+            Debug.Log(whichLense);
+        }
+    }
+    
+    /*
 	void ToggleBlackAndWhite()
 	{
 		if (blackAndWhite)
@@ -198,4 +266,5 @@ public class LensesManager : MonoBehaviour
 
 		postProcess.colorGrading.settings = colorGrading;
 	}
+    */
 }
