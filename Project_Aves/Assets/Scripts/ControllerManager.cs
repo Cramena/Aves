@@ -97,6 +97,7 @@ public class ControllerManager : MonoBehaviour {
 	//Rotation Variables
 	[Tooltip("The speed at which the bird turns in 2D.")]
 	public float turnSpeed2D = 2;
+//	Quaternion axis2D;
 
 	float zRotation;
 	float loopingTimer;
@@ -171,10 +172,11 @@ public class ControllerManager : MonoBehaviour {
 	{
 		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
 		{
-			Vector3 direction = new Vector3(0, Mathf.Atan2(-gamepad.GetStick_L ().Y, gamepad.GetStick_L ().X) * 180 / Mathf.PI, 0);
+			Vector3 direction = new Vector3(0, Camera.main.transform.right.normalized.x + Mathf.Atan2(-gamepad.GetStick_L ().Y, gamepad.GetStick_L ().X) * 180 / Mathf.PI, 0);
 
 			float step = turnSpeed2D * Time.deltaTime;
-			Quaternion turnRotation = Quaternion.Euler(direction.y, 0, 0f);
+			Quaternion turnRotation = Quaternion.Euler(direction.y, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
+//			turnRotation = turnRotation /** Quaternion.Inverse(Camera.main.transform.rotation)*/;
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, step);
 		}
 	}
@@ -184,11 +186,6 @@ public class ControllerManager : MonoBehaviour {
 		eulerAngZ = transform.localEulerAngles.z;
 		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone)
 		{
-//			if (Mathf.Sign (gamepad.GetStick_L ().X) == -1) {
-//				zRotation = ((-gamepad.GetStick_L ().X/(1-deadzone)) * 45) - eulerAngZ;
-//			} else {
-//				zRotation = (360 + (-gamepad.GetStick_L ().X/(1-deadzone)) * 45) - eulerAngZ;
-//			}
 			if ((eulerAngZ < 180 && eulerAngZ > 45 && Mathf.Sign (gamepad.GetStick_L ().X) == -1) || (eulerAngZ > 180 && eulerAngZ < 320 && Mathf.Sign (gamepad.GetStick_L ().X) == 1))
 			{
 				zRotation = 0;
@@ -396,8 +393,11 @@ public class ControllerManager : MonoBehaviour {
 	void Initialize2D()
 	{
 		is2D = true;
-		mainCam.m_LookAt = null;
-		mainCam.m_Follow = null;
+//		mainCam.m_LookAt = null;
+//		mainCam.m_Follow = null;
+		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
+		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
+
 		StartCoroutine(TransitionTo2D (mainCam.m_Lens.FieldOfView));
 	}
 
@@ -429,6 +429,7 @@ public class ControllerManager : MonoBehaviour {
 			counter = Mathf.Clamp (counter, 0, 1);
 			yield return null;
 		}
+//		axis2D = Camera.main.GetComponent<CameraController>().direction2D;
 		isTransitionning = false;
 	}
 

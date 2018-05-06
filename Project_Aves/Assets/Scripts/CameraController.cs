@@ -1,100 +1,52 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CameraController : MonoBehaviour
 {
 
+	public float distance2D = 50;
+	public float transitionSpeed = 4;
 
-    public Transform TargetPos;
-    public float PosLerpSpeed;
+	bool is2D;
+	Vector3 initialPosition;
+	Vector3 initialDirection;
+	public Vector3 direction2D;
+	Vector3 playerStartPosition;
+	Vector3 playerStartDirection;
+	float transitionTimer;
 
-    public Transform TargetToLook;
-    public float RotLerpSpeed;
-
-
-    Vector3 localRotation;
-    float cameraDistance;
-    public float speedRot =5f;
-
-
-    /*public float cameraSpeed = 120.0f;
-    public GameObject cameraRotate; 
-    Vector3 followPosition;
-    public float clampAngle = 80.0f;
-    public float inputSensivity = 150.0f;
-    public GameObject CameraObj;
-    public GameObject PlayerObj;
-    public float camDistanceXToPlayer;
-    public float camDistanceYToPlayer;
-    public float camDistanceZToPlayer;
-    public float mouseX;
-    public float mouseY;
-    public float finalInputX;
-    public float finalInputZ; 
-    public float smoothX; 
-    public float smoothY;
-    private float rotY = 0.0f;
-    private float rotX = 0.0f;
-    */
-
-
-    void Start()
+	void Start()
     {
-        /*Vector3 rot = transform.localRotation.eulerAngles;
-        rotY = rot.y;
-        rotX = rot.x;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false; 
-        */
 
     }
 
-    void Update()
+    void FixedUpdate()
     {
+		if (is2D) {
+			Transitionning ();
+		}
+	}
 
-        /*float inputX = Input.GetAxis("AxisX");
-        float inputZ = Input.GetAxis("AxisY");
-        mouseX = Input.GetAxis("Mouse X");
-        mouseY = Input.GetAxis("Mouse Y");
-        finalInputX = inputX + mouseX;
-        finalInputZ = inputZ + mouseY; 
+	void Transitionning() {
+		if (transitionTimer < 1) {
+			transform.forward = Vector3.Slerp (initialDirection, direction2D, transitionTimer);
+			transform.position = Vector3.Lerp (initialPosition, playerStartPosition + (playerStartDirection * distance2D), transitionTimer);
+			transitionTimer += Time.fixedDeltaTime * transitionSpeed;
+		}
+	}
 
-        rotY += finalInputX * inputSensivity * Time.deltaTime;
-        rotX += finalInputZ * inputSensivity * Time.deltaTime;
+	public void TransitionCamera2D(Vector3 _playerDirection, Vector3 _playerPosition, CinemachineFreeLook _cinemachine) {
+		transform.position = _cinemachine.transform.position;
+		transform.rotation = Quaternion.LookRotation(_playerPosition - _cinemachine.transform.position);
+		is2D = true;
+		transitionTimer = 0;
+		direction2D = new Vector3 (-_playerDirection.x, 0, -_playerDirection.z);
+		playerStartPosition = _playerPosition;
+		playerStartDirection = _playerDirection;
+		initialPosition = transform.position;
+		initialDirection = transform.forward;
+	}
 
-        rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
-
-        //if (Input.GetAxis("AxisX") != 0 || Input.GetAxis("AxisY") != 0)
-        //{
-            Quaternion localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
-            transform.rotation = localRotation; 
-        //}
-        */
-
-            transform.position = Vector3.Lerp(transform.position, TargetPos.position, PosLerpSpeed);
-
-            Vector3 PosToLook = TargetToLook.position - transform.position;
-            Quaternion Rot = Quaternion.LookRotation(PosToLook);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Rot, RotLerpSpeed);
-
-        //transform.Rotate(Input.GetAxis("AxisY"), Input.GetAxis("AxisX"), -Input.GetAxis("AxisX") + Input.GetAxis("AxisY") / 2);
-    }
-
-    void LateUpdate()
-    {
-        //if (Input.GetAxis("AxisX") != 0 || Input.GetAxis("AxisY") != 0)
-        //{
-            //CameraUpdater(); 
-        //}
-   
-    }
-
-    /*void CameraUpdater ()
-    {
-        Transform target = TargetToLook.transform;
-
-        float step = cameraSpeed * Time.deltaTime;
-        transform.position = Vector3.MoveTowards(transform.position, target.position, step); 
-    }*/
 }
