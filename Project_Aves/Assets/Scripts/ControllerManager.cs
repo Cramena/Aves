@@ -90,6 +90,14 @@ public class ControllerManager : MonoBehaviour {
 	[Tooltip("The speed at which the bird's Z axis resets to zero.")]
 	public float resettingSpeed = 2;
 
+	[Space]
+	[Header("2D Rotation variables")]
+	[Space]
+
+	//Rotation Variables
+	[Tooltip("The speed at which the bird turns in 2D.")]
+	public float turnSpeed2D = 2;
+
 	float zRotation;
 	float loopingTimer;
 	float resetLoopingTimer;
@@ -147,12 +155,28 @@ public class ControllerManager : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if (!isTransitionning)
+		if (!isTransitionning && !is2D)
 		{
 			UpdateRotation ();
 		}
+		else if (is2D)
+		{
+			UpdateRotation2D ();
+		}
 
 		Move ();
+	}
+
+	void UpdateRotation2D()
+	{
+		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		{
+			Vector3 direction = new Vector3(0, Mathf.Atan2(-gamepad.GetStick_L ().Y, gamepad.GetStick_L ().X) * 180 / Mathf.PI, 0);
+
+			float step = turnSpeed2D * Time.deltaTime;
+			Quaternion turnRotation = Quaternion.Euler(direction.y, 0, 0f);
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, step);
+		}
 	}
 
 	void UpdateRotation()
@@ -237,19 +261,15 @@ public class ControllerManager : MonoBehaviour {
 		}
 	}
 
-
-
 	void UpdateRecenterHeading()
 	{
 		if (Mathf.Abs (gamepad.GetStick_L ().X) > deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) > deadzone)
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = true;
-			print ("Left stick");
 		}
 		else
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = false;
-			print ("Right stick");
 		}
 		
 	}
@@ -406,7 +426,8 @@ public class ControllerManager : MonoBehaviour {
 			transform.rotation = Quaternion.Slerp (initialRotation, final2DRotation, counter);
 
 			counter += Time.deltaTime * 4;
-			yield return new WaitForSeconds (Time.deltaTime);
+			counter = Mathf.Clamp (counter, 0, 1);
+			yield return null;
 		}
 		isTransitionning = false;
 	}
