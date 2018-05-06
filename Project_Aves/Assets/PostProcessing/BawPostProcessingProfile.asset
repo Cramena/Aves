@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8a3bdb2cd68f901469e7cc149151eb49, type: 3}
-  m_Name: No Lense Post-Processing Profile
+  m_Name: BawPostProcessingProfile
   m_EditorClassIdentifier: 
   debugViews:
     m_Enabled: 1
@@ -40,10 +40,10 @@ MonoBehaviour:
         stationaryBlending: 0.95
         motionBlending: 0.85
   ambientOcclusion:
-    m_Enabled: 1
+    m_Enabled: 0
     m_Settings:
       intensity: 4
-      radius: 0.5
+      radius: 0.0001
       sampleCount: 10
       downsampling: 1
       forceForwardCompatibility: 0
@@ -55,19 +55,19 @@ MonoBehaviour:
       reflection:
         blendType: 0
         reflectionQuality: 2
-        maxDistance: 100
-        iterationCount: 256
+        maxDistance: 63
+        iterationCount: 167
         stepSize: 3
         widthModifier: 0.5
         reflectionBlur: 1
         reflectBackfaces: 0
       intensity:
-        reflectionMultiplier: 1
+        reflectionMultiplier: 0.776
         fadeDistance: 100
         fresnelFade: 1
         fresnelFadePower: 1
       screenEdgeMask:
-        intensity: 0.03
+        intensity: 0.74
   depthOfField:
     m_Enabled: 0
     m_Settings:
@@ -85,29 +85,29 @@ MonoBehaviour:
   eyeAdaptation:
     m_Enabled: 0
     m_Settings:
-      lowPercent: 45
-      highPercent: 95
-      minLuminance: -5
-      maxLuminance: 1
+      lowPercent: 1.3690454
+      highPercent: 32.597294
+      minLuminance: -8.65
+      maxLuminance: -3.71
       keyValue: 0.25
       dynamicKeyValue: 1
-      adaptationType: 0
+      adaptationType: 1
       speedUp: 2
       speedDown: 1
-      logMin: -8
-      logMax: 4
+      logMin: -16
+      logMax: 16
   bloom:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       bloom:
-        intensity: 1.41
-        threshold: 1.1
-        softKnee: 0.447
-        radius: 7
-        antiFlicker: 0
+        intensity: 0.04
+        threshold: 0
+        softKnee: 0.075
+        radius: 3.53
+        antiFlicker: 1
       lensDirt:
         texture: {fileID: 0}
-        intensity: 3
+        intensity: 0
   colorGrading:
     m_Enabled: 1
     m_Settings:
@@ -120,12 +120,12 @@ MonoBehaviour:
         neutralWhiteLevel: 5.3
         neutralWhiteClip: 10
       basic:
-        postExposure: 0
+        postExposure: -3.26
         temperature: 0
         tint: 0
         hueShift: 0
-        saturation: 1
-        contrast: 1
+        saturation: 0
+        contrast: 0.659
       channelMixer:
         red: {x: 1, y: 0, z: 0}
         green: {x: 0, y: 1, z: 0}
@@ -284,7 +284,7 @@ MonoBehaviour:
     m_Enabled: 1
     m_Settings:
       spectralTexture: {fileID: 0}
-      intensity: 0.3557382
+      intensity: 1
   grain:
     m_Enabled: 0
     m_Settings:
@@ -293,14 +293,14 @@ MonoBehaviour:
       size: 3
       luminanceContribution: 0.56
   vignette:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       mode: 0
       color: {r: 0, g: 0, b: 0, a: 1}
       center: {x: 0.5, y: 0.5}
-      intensity: 0.353
-      smoothness: 1
-      roundness: 0.713
+      intensity: 0.468
+      smoothness: 0.981
+      roundness: 0.775
       mask: {fileID: 0}
       opacity: 1
       rounded: 0
