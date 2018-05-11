@@ -6,12 +6,8 @@ using UnityEngine.PostProcessing;
 
 public class ControllerManager : MonoBehaviour {
 	
-	#region Controller
-	[HideInInspector]
 	public x360_Gamepad gamepad;
 	private GamepadManager manager;
-	#endregion
-
 
 	public CinemachineFreeLook mainCam;
 	public PostProcessingProfile postProcess;
