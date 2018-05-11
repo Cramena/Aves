@@ -32,7 +32,7 @@ public class CameraController : MonoBehaviour
 	void Transitionning() {
 		if (transitionTimer < 1) {
 			transform.forward = Vector3.Slerp (initialDirection, direction2D, transitionTimer);
-			transform.position = Vector3.Lerp (initialPosition, playerStartPosition + (playerStartDirection * distance2D), transitionTimer);
+			transform.position = Vector3.Lerp (initialPosition, playerStartPosition + (playerStartDirection.normalized * distance2D), transitionTimer);
 			transitionTimer += Time.fixedDeltaTime * transitionSpeed;
 		}
 	}

@@ -6,7 +6,7 @@ using UnityEngine.PostProcessing;
 
 public class ControllerManager : MonoBehaviour {
 	
-	#region
+	#region Controller
 	[HideInInspector]
 	public x360_Gamepad gamepad;
 	private GamepadManager manager;
@@ -16,6 +16,8 @@ public class ControllerManager : MonoBehaviour {
 	public CinemachineFreeLook mainCam;
 	public PostProcessingProfile postProcess;
 	public Transform lookAt;
+	public GameObject song;
+	public GameManager gameManager;
 	Rigidbody rigidbody;
 
 	[Space]
@@ -97,7 +99,12 @@ public class ControllerManager : MonoBehaviour {
 	//Rotation Variables
 	[Tooltip("The speed at which the bird turns in 2D.")]
 	public float turnSpeed2D = 2;
-//	Quaternion axis2D;
+
+	[Space]
+	[Header("Transition variables")]
+	[Space]
+
+	public float transitionSpeed3D = 2;
 
 	float zRotation;
 	float loopingTimer;
@@ -107,18 +114,19 @@ public class ControllerManager : MonoBehaviour {
     float eulerAngZ;
 	[SerializeField]
 	bool is2D;
-	bool isTransitionning;
+	[SerializeField]
+	bool immobilised;
+	bool isSinging;
 
 
 
     void Start ()
     {
+		gameManager.AddPlayer (this);
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
 		rigidbody = GetComponent<Rigidbody> ();
-//		mainCam.m_LookAt = transform;
-//		mainCam.m_Follow = transform;
-
+		song.SetActive (false);
 		InitializeVariables ();
 	}
 
@@ -143,6 +151,18 @@ public class ControllerManager : MonoBehaviour {
 //			mainCam.m_LookAt = transform;
 //			mainCam.m_Follow = transform;
 		}
+		else if (!immobilised)
+		{
+			CheckTurnBack2D ();
+			if (gamepad.GetButton ("RB"))
+			{
+				StartSinging ();
+			}
+			else if (isSinging)
+			{
+				StopSinging ();
+			}
+		}
 
 //		CheckGround ();
 
@@ -156,13 +176,16 @@ public class ControllerManager : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if (!isTransitionning && !is2D)
+		if (!immobilised)
 		{
-			UpdateRotation ();
-		}
-		else if (is2D)
-		{
-			UpdateRotation2D ();
+			if (!is2D)
+			{
+				UpdateRotation ();
+			}
+			else
+			{
+				UpdateRotation2D ();
+			}
 		}
 
 		Move ();
@@ -170,14 +193,11 @@ public class ControllerManager : MonoBehaviour {
 
 	void UpdateRotation2D()
 	{
-		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)									//4.5f jours de code pour en arriver là
 		{
-			Vector3 direction = new Vector3(0, Camera.main.transform.right.normalized.x + Mathf.Atan2(-gamepad.GetStick_L ().Y, gamepad.GetStick_L ().X) * 180 / Mathf.PI, 0);
-
-			float step = turnSpeed2D * Time.deltaTime;
-			Quaternion turnRotation = Quaternion.Euler(direction.y, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-//			turnRotation = turnRotation /** Quaternion.Inverse(Camera.main.transform.rotation)*/;
-			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, step);
+			Quaternion turnRotation = Quaternion.Euler(Mathf.Atan2(-gamepad.GetStick_L ().Y, gamepad.GetStick_L ().X) * 180 / Mathf.PI, 90, 0);
+			turnRotation = Camera.main.transform.rotation * turnRotation;
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, turnSpeed2D);
 		}
 	}
 
@@ -226,7 +246,6 @@ public class ControllerManager : MonoBehaviour {
 	{
 		if (loopingTimer >= 1)
 		{
-			print ("Resetting");
 			resetLoopingTimer = 0;
 			initialRotation = transform.rotation;
 			isResetting = true;
@@ -297,12 +316,10 @@ public class ControllerManager : MonoBehaviour {
 	{
 		if (gamepad.GetTrigger_L () > deadzone)
 		{
-			print ("Left Trigger");
 			speedModifiyer =- 5f;
 		}
 		else if (gamepad.GetTrigger_R () > deadzone)
 		{
-			print ("Right Trigger");
 			speedModifiyer = 5f;
 		}
 		else
@@ -393,17 +410,15 @@ public class ControllerManager : MonoBehaviour {
 	void Initialize2D()
 	{
 		is2D = true;
-//		mainCam.m_LookAt = null;
-//		mainCam.m_Follow = null;
 		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
 		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
-
+		gameManager.CreateFigure ();
 		StartCoroutine(TransitionTo2D (mainCam.m_Lens.FieldOfView));
 	}
 
 	IEnumerator TransitionTo2D(float initialFOV)
 	{
-		isTransitionning = true;
+		immobilised = true;
 		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
 		float initialAberration = chromaticAberration.intensity;
 		myFieldOfView = mainCam.m_Lens.FieldOfView;
@@ -429,13 +444,62 @@ public class ControllerManager : MonoBehaviour {
 			counter = Mathf.Clamp (counter, 0, 1);
 			yield return null;
 		}
-//		axis2D = Camera.main.GetComponent<CameraController>().direction2D;
-		isTransitionning = false;
+		immobilised = false;
 	}
 
 	void Initialize3D()
 	{
 		is2D = false;
+		StartCoroutine(TransitionTo3D ());
+	}
+
+	IEnumerator TransitionTo3D()
+	{
+		float counter = 0;
+		while (counter < 1)
+		{
+			Camera.main.transform.position = Vector3.Lerp (Camera.main.transform.position, mainCam.transform.position, counter);
+			Camera.main.transform.forward = Vector3.Lerp (Camera.main.transform.forward, transform.forward, counter);
+			counter += Time.deltaTime * transitionSpeed3D;
+			yield return null;
+		}
+		Camera.main.GetComponent<CinemachineBrain>().enabled = true;
+	}
+
+	void CheckTurnBack2D()
+	{
+		Vector3 position2D = Camera.main.transform.InverseTransformPoint (transform.position);
+		if (Mathf.Abs (position2D.x) > 45 || Mathf.Abs (position2D.y) > 32)
+		{
+			StartCoroutine(TurnBack2D ());
+		}
+	}
+
+	IEnumerator TurnBack2D()
+	{
+		immobilised = true;
+		Vector3 targetDirection = -transform.forward;
+		float counter = 0;
+		while (Vector3.Angle(transform.forward, targetDirection) > 5)
+		{
+			Quaternion newRot = Quaternion.AngleAxis (turnSpeed2D, Camera.main.transform.InverseTransformDirection( Camera.main.transform.right));
+			transform.rotation = transform.rotation * newRot;
+			counter += Time.fixedDeltaTime;
+			yield return null;
+		}
+		immobilised = false;
+	}
+
+	void StartSinging()
+	{
+		isSinging = true;
+		song.SetActive (true);
+	}
+
+	void StopSinging()
+	{
+		isSinging = false;
+		song.SetActive (false);
 	}
 
 }
