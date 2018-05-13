@@ -20,6 +20,7 @@ public class FigureElementController : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other)
 	{
+		print ("Wesh");
 		if (other.tag == "Player")
 		{
 			if (other.GetComponent<ControllerManager> ().playerIndex == 1)

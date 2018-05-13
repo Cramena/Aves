@@ -7,6 +7,7 @@ public class FigureController : MonoBehaviour {
 	bool completed;
 	public FigureElementController[] blueElements;
 	public FigureElementController[] redElements;
+	public GameManager manager;
 
 	public void ElementCompleted()
 	{
@@ -28,7 +29,7 @@ public class FigureController : MonoBehaviour {
 		}
 		if (redComplete && blueComplete)
 		{
-			completed = true;
+			manager.FigureComplete (gameObject);
 		}
 	}
 

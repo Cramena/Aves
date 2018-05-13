@@ -69,27 +69,27 @@ public class LensesManager : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update ()
-	{
-		if (gamepad.GetButtonDown ("A"))
-		{
-			ToggleBlackAndWhite ();
-		}
-		if (gamepad.GetButtonDown ("B"))
-		{
-			ToggleNight ();
-		}
-
-		if (bawTimer > 0)
-		{
-			UpdateBlackAndWhite ();
-		}
-
-		if (nightTimer > 0)
-		{
-			UpdateNight ();
-		}
-	}
+//	void Update ()
+//	{
+//		if (gamepad.GetButtonDown ("A"))
+//		{
+//			ToggleBlackAndWhite ();
+//		}
+//		if (gamepad.GetButtonDown ("B"))
+//		{
+//			ToggleNight ();
+//		}
+//
+//		if (bawTimer > 0)
+//		{
+//			UpdateBlackAndWhite ();
+//		}
+//
+//		if (nightTimer > 0)
+//		{
+//			UpdateNight ();
+//		}
+//	}
 
 	void ToggleBlackAndWhite()
 	{

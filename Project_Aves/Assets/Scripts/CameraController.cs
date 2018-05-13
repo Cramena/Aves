@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
 	bool is2D;
 	Vector3 initialPosition;
 	Vector3 initialDirection;
+	Vector3 endPosition;
 	public Vector3 direction2D;
 	Vector3 playerStartPosition;
 	Vector3 playerStartDirection;
@@ -32,8 +33,11 @@ public class CameraController : MonoBehaviour
 	void Transitionning() {
 		if (transitionTimer < 1) {
 			transform.forward = Vector3.Slerp (initialDirection, direction2D, transitionTimer);
-			transform.position = Vector3.Lerp (initialPosition, playerStartPosition + (playerStartDirection.normalized * distance2D), transitionTimer);
+			transform.position = Vector3.Lerp (initialPosition, endPosition, transitionTimer);
 			transitionTimer += Time.fixedDeltaTime * transitionSpeed;
+		} else {
+			Camera.main.fieldOfView = 60;
+//			print(Vector3.Distance(GameObject.Find("Player").transform.position, endPosition));
 		}
 	}
 
@@ -47,6 +51,8 @@ public class CameraController : MonoBehaviour
 		playerStartDirection = _playerDirection;
 		initialPosition = transform.position;
 		initialDirection = transform.forward;
+		endPosition = playerStartPosition + (new Vector3(playerStartDirection.x, 0, playerStartDirection.z).normalized * distance2D);
+//		print(Vector3.Distance(GameObject.Find("Player").transform.position, endPosition));
 	}
 
 }
