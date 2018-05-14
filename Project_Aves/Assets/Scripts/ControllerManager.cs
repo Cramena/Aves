@@ -21,7 +21,7 @@ public class ControllerManager : MonoBehaviour {
 	public int playerIndex;
 	[Tooltip("How much the player must move the stick to activate it. Too low and it will be activated when the player isn't touching it. Too high and  the player won't be able to make subtle moves.")]
 	[Range(0.1f, 0.9f)]
-	public float deadzone = 0.2f;
+	public float deadzone = 0.25f;
 
 	[Space]
 	[Header("Speed variables")]
@@ -201,6 +201,8 @@ public class ControllerManager : MonoBehaviour {
 		if (/*Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone*/ input.magnitude >= deadzone)									//4.5f jours de code pour en arriver là
 		{
 //			Vector2 input = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
+
+			input = input.normalized * ((input.magnitude - deadzone) / (1 - deadzone));
 
 			Quaternion turnRotation = Quaternion.Euler(Mathf.Atan2(-input.y, input.x) * 180 / Mathf.PI, 90, 0);
 			turnRotation = Camera.main.transform.rotation * turnRotation;
