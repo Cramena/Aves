@@ -14,7 +14,47 @@ public class QuickGlow : MonoBehaviour
     [Range(0, 3)]
     public float Intensity;
 
+
+    [Header("Flash variables")]
+    [Range(0, 3)]
+    public float initialIntensity = 3;
+    [Range(0, 3)]
+    public float finalIntensity = 0;
+    public float flashSpeed;
+    private bool flashActivated;
+
+    public void Activated()
+    {
+        flashActivated = true;
+        Intensity = initialIntensity;
+    }
+
+    void Update ()
+    {
+        if (flashActivated == true && Intensity >= finalIntensity)
+        {
+            Intensity -= Time.deltaTime * flashSpeed;
+            CustomValidate();
+        }
+        
+        if (Intensity <= finalIntensity)
+        {
+            flashActivated = false;
+            this.enabled = false;
+        }
+    }
+
+    // Unity function called when the script is loaded or a value is changed in the inspector (Called in the editor only).
     void OnValidate()
+    {
+        if (BlurMaterial != null)
+            BlurMaterial.SetFloat("_Size", Size);
+        if (AddMaterial != null)
+            AddMaterial.SetFloat("_Intensity", Intensity);
+    }
+
+    // Simulating the same effects as OnValidate to make the render image in real time
+    void CustomValidate()
     {
         if (BlurMaterial != null)
             BlurMaterial.SetFloat("_Size", Size);
