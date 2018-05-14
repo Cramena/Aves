@@ -6,16 +6,14 @@ using UnityEngine.PostProcessing;
 
 public class ControllerManager : MonoBehaviour {
 	
-	#region
-	[HideInInspector]
 	public x360_Gamepad gamepad;
 	private GamepadManager manager;
-	#endregion
-
 
 	public CinemachineFreeLook mainCam;
 	public PostProcessingProfile postProcess;
 	public Transform lookAt;
+	public GameObject song;
+	public GameManager gameManager;
 	Rigidbody rigidbody;
 
 	[Space]
@@ -98,6 +96,12 @@ public class ControllerManager : MonoBehaviour {
 	[Tooltip("The speed at which the bird turns in 2D.")]
 	public float turnSpeed2D = 2;
 
+	[Space]
+	[Header("Transition variables")]
+	[Space]
+
+	public float transitionSpeed3D = 2;
+
 	float zRotation;
 	float loopingTimer;
 	float resetLoopingTimer;
@@ -106,18 +110,20 @@ public class ControllerManager : MonoBehaviour {
     float eulerAngZ;
 	[SerializeField]
 	bool is2D;
-	bool isTransitionning;
+	[SerializeField]
+	bool immobilised;
+	[SerializeField]
+	public bool isSinging;
 
 
 
     void Start ()
     {
+		gameManager.AddPlayer (this);
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
 		rigidbody = GetComponent<Rigidbody> ();
-//		mainCam.m_LookAt = transform;
-//		mainCam.m_Follow = transform;
-
+		song.SetActive (false);
 		InitializeVariables ();
 	}
 
@@ -135,12 +141,31 @@ public class ControllerManager : MonoBehaviour {
 
 		if (!is2D)
 		{
-			UpdateFOV ();
+			if (!immobilised)
+			{
+				UpdateFOV ();
 
-			UpdateChromaticAberration ();
+				UpdateChromaticAberration ();
+			}
 
 //			mainCam.m_LookAt = transform;
 //			mainCam.m_Follow = transform;
+		}
+		else if (!immobilised)
+		{
+			CheckTurnBack2D ();
+			if (Input.GetAxis("RT") == 1 || Input.GetAxis("LT") == 1)
+			{
+				StartSinging ();
+			}
+			else if (isSinging)
+			{
+				StopSinging ();
+			}
+			if (Input.GetButtonDown ("Fire2")) {
+				ResetSong ();
+			}
+
 		}
 
 //		CheckGround ();
@@ -155,13 +180,16 @@ public class ControllerManager : MonoBehaviour {
 
 	void FixedUpdate()
 	{
-		if (!isTransitionning && !is2D)
+		if (!immobilised)
 		{
-			UpdateRotation ();
-		}
-		else if (is2D)
-		{
-			UpdateRotation2D ();
+			if (!is2D)
+			{
+				UpdateRotation ();
+			}
+			else
+			{
+				UpdateRotation2D ();
+			}
 		}
 
 		Move ();
@@ -169,53 +197,49 @@ public class ControllerManager : MonoBehaviour {
 
 	void UpdateRotation2D()
 	{
-		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
+		if (/*Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone*/ input.magnitude >= deadzone)									//4.5f jours de code pour en arriver là
 		{
-			Vector3 direction = new Vector3(0, Mathf.Atan2(-gamepad.GetStick_L ().Y, gamepad.GetStick_L ().X) * 180 / Mathf.PI, 0);
+//			Vector2 input = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
 
-			float step = turnSpeed2D * Time.deltaTime;
-			Quaternion turnRotation = Quaternion.Euler(direction.y, 0, 0f);
-			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, step);
+			Quaternion turnRotation = Quaternion.Euler(Mathf.Atan2(-input.y, input.x) * 180 / Mathf.PI, 90, 0);
+			turnRotation = Camera.main.transform.rotation * turnRotation;
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, turnSpeed2D);
 		}
 	}
 
 	void UpdateRotation()
 	{
 		eulerAngZ = transform.localEulerAngles.z;
-		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone)
+		if (Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone)
 		{
-//			if (Mathf.Sign (gamepad.GetStick_L ().X) == -1) {
-//				zRotation = ((-gamepad.GetStick_L ().X/(1-deadzone)) * 45) - eulerAngZ;
-//			} else {
-//				zRotation = (360 + (-gamepad.GetStick_L ().X/(1-deadzone)) * 45) - eulerAngZ;
-//			}
-			if ((eulerAngZ < 180 && eulerAngZ > 45 && Mathf.Sign (gamepad.GetStick_L ().X) == -1) || (eulerAngZ > 180 && eulerAngZ < 320 && Mathf.Sign (gamepad.GetStick_L ().X) == 1))
+			if ((eulerAngZ < 180 && eulerAngZ > 45 && Mathf.Sign (Input.GetAxis("Horizontal")) == -1) || (eulerAngZ > 180 && eulerAngZ < 320 && Mathf.Sign (Input.GetAxis("Horizontal")) == 1))
 			{
 				zRotation = 0;
 			}
 			else
 			{
-				zRotation = -gamepad.GetStick_L ().X * turnSpeed * 2;
+				zRotation = -Input.GetAxis("Horizontal") * turnSpeed * 2;
 			}
 
-			Quaternion yRotator = Quaternion.AngleAxis ((gamepad.GetStick_L ().X - deadzone * Mathf.Sign(gamepad.GetStick_L ().X)) * turnSpeed, Vector3.up);
+			Quaternion yRotator = Quaternion.AngleAxis ((Input.GetAxis("Horizontal") - deadzone * Mathf.Sign(Input.GetAxis("Horizontal"))) * turnSpeed, Vector3.up);
 			transform.rotation = yRotator * transform.rotation;
 			Quaternion zRotator = Quaternion.AngleAxis (zRotation, transform.forward);
 			transform.rotation = zRotator * transform.rotation;
 		}
 
-		if (Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		if (Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone)
 		{
 			if (loopingTimer != 0)
 			{
 				loopingTimer = 0f;
 			}
 
-			Quaternion xRotator = Quaternion.AngleAxis (gamepad.GetStick_L ().Y * turnSpeed, transform.right);
+			Quaternion xRotator = Quaternion.AngleAxis (Input.GetAxis("Vertical") * turnSpeed, transform.right);
 			Quaternion rotation = Quaternion.LookRotation (xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if (transform.up != Vector3.up && Mathf.Abs (gamepad.GetStick_L ().X) < deadzone && Mathf.Abs (gamepad.GetStick_L ().Y) < deadzone)
+		if (Mathf.Abs(transform.forward.y) > 0.1f && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone)
 		{
 			CheckResetZAngle ();
 		}
@@ -229,7 +253,6 @@ public class ControllerManager : MonoBehaviour {
 	{
 		if (loopingTimer >= 1)
 		{
-			print ("Resetting");
 			resetLoopingTimer = 0;
 			initialRotation = transform.rotation;
 			isResetting = true;
@@ -242,7 +265,7 @@ public class ControllerManager : MonoBehaviour {
 
 	void ResetZAngle()
 	{
-		if (resetLoopingTimer < 1 && Mathf.Abs (gamepad.GetStick_L ().Y) < deadzone && Mathf.Abs (gamepad.GetStick_L ().X) < deadzone)
+		if (resetLoopingTimer < 1 && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone)
 		{
 			loopingTimer = 0;
 			resetLoopingTimer += 1.0f * Time.fixedDeltaTime;
@@ -250,7 +273,7 @@ public class ControllerManager : MonoBehaviour {
 //			if (Mathf.Abs (transform.forward.y) > 0.3f) {
 //				rotation = Quaternion.LookRotation (new Vector3 (transform.forward.x, 0, transform.forward.z), Vector3.up);
 //			} else {
-				rotation = Quaternion.LookRotation (transform.forward, Vector3.up);
+			rotation = Quaternion.LookRotation (new Vector3(transform.forward.x, 0, transform.forward.z), Vector3.up);
 //			}
 			transform.rotation = Quaternion.Slerp (initialRotation, rotation, resetLoopingTimer);
 		}
@@ -263,7 +286,7 @@ public class ControllerManager : MonoBehaviour {
 
 	void UpdateRecenterHeading()
 	{
-		if (Mathf.Abs (gamepad.GetStick_L ().X) > deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) > deadzone)
+		if (Mathf.Abs (Input.GetAxis("Horizontal")) > deadzone || Mathf.Abs (Input.GetAxis("Vertical")) > deadzone)
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = true;
 		}
@@ -298,14 +321,12 @@ public class ControllerManager : MonoBehaviour {
 
 	void AccelerateOrDecelerate()
 	{
-		if (gamepad.GetTrigger_L () > deadzone)
+		if (/*gamepad.GetTrigger_L () > deadzone*/Input.GetAxis("RT") > deadzone)
 		{
-			print ("Left Trigger");
 			speedModifiyer =- 5f;
 		}
-		else if (gamepad.GetTrigger_R () > deadzone)
+		else if (/*gamepad.GetTrigger_R () > deadzone*/Input.GetAxis("LT") > deadzone)
 		{
-			print ("Right Trigger");
 			speedModifiyer = 5f;
 		}
 		else
@@ -368,7 +389,7 @@ public class ControllerManager : MonoBehaviour {
 
 	void CheckRecenter()
 	{
-		if (Mathf.Abs (gamepad.GetStick_L ().X) >= deadzone || Mathf.Abs (gamepad.GetStick_L ().Y) >= deadzone)
+		if (Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone)
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = false;
 		}
@@ -380,7 +401,7 @@ public class ControllerManager : MonoBehaviour {
 
 	void CheckFor2D()
 	{
-		if (gamepad.GetButtonDown ("X"))
+		if (Input.GetButtonDown("Fire1") && (Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone) && transform.position.y > 45)
 		{
 			if (is2D)
 			{
@@ -396,20 +417,24 @@ public class ControllerManager : MonoBehaviour {
 	void Initialize2D()
 	{
 		is2D = true;
-		mainCam.m_LookAt = null;
-		mainCam.m_Follow = null;
-		StartCoroutine(TransitionTo2D (mainCam.m_Lens.FieldOfView));
-	}
-
-	IEnumerator TransitionTo2D(float initialFOV)
-	{
-		isTransitionning = true;
-		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
-		float initialAberration = chromaticAberration.intensity;
-		myFieldOfView = mainCam.m_Lens.FieldOfView;
+		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
+		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
 
 		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
 		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
+		StartCoroutine(TransitionTo2D (final2DRotation));
+	}
+
+	IEnumerator TransitionTo2D(Quaternion final2DRotation)
+	{
+		immobilised = true;
+		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
+		float initialAberration = chromaticAberration.intensity;
+		myFieldOfView = mainCam.m_Lens.FieldOfView;
+		float _initialFOV = mainCam.m_Lens.FieldOfView;
+
+//		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
+//		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
 		Quaternion initialRotation = transform.rotation;
 
 		float counter = 0;
@@ -417,10 +442,11 @@ public class ControllerManager : MonoBehaviour {
 		{
 			chromaticAberration.intensity = Mathf.Lerp (initialAberration, 0, counter);
 			postProcess.chromaticAberration.settings = chromaticAberration;
-
+			myFieldOfView = Mathf.Lerp(_initialFOV, 60, counter);
+			Camera.main.fieldOfView = Mathf.Lerp(_initialFOV, 60, counter);
 //			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
 //			myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
-			myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
+//			myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
 			mainCam.m_Lens.FieldOfView = myFieldOfView;
 
 			transform.rotation = Quaternion.Slerp (initialRotation, final2DRotation, counter);
@@ -429,12 +455,78 @@ public class ControllerManager : MonoBehaviour {
 			counter = Mathf.Clamp (counter, 0, 1);
 			yield return null;
 		}
-		isTransitionning = false;
+		gameManager.CreateFigure ();
+		transform.rotation = final2DRotation;
+		immobilised = false;
 	}
 
 	void Initialize3D()
 	{
 		is2D = false;
+		StartCoroutine(TransitionTo3D ());
+	}
+
+	IEnumerator TransitionTo3D()
+	{
+		Vector3 initialPosition = Camera.main.transform.position;
+		Vector3 initialDirection = Camera.main.transform.forward;
+		float counter = 0;
+		while (counter < 1)
+		{
+			Camera.main.transform.position = Vector3.Lerp (initialPosition, mainCam.transform.position, counter);
+			Camera.main.transform.forward = Vector3.Lerp (initialDirection, transform.forward, counter);
+			counter += Time.deltaTime * transitionSpeed3D;
+			yield return null;
+		}
+		Camera.main.GetComponent<CinemachineBrain>().enabled = true;
+	}
+
+	void CheckTurnBack2D()
+	{
+		Vector3 position2D = Camera.main.transform.InverseTransformPoint (transform.position);
+		if (Mathf.Abs (position2D.x) > 45 || Mathf.Abs (position2D.y) > 25)
+		{
+			StartCoroutine(TurnBack2D ());
+		}
+	}
+
+	IEnumerator TurnBack2D()
+	{
+		immobilised = true;
+		Vector3 targetDirection = -transform.forward;
+		float counter = 0;
+		Vector3 position2D = Camera.main.transform.InverseTransformPoint (transform.position);
+		while (Vector3.Angle(transform.forward, targetDirection) > 5 && (Mathf.Abs (position2D.x) > 45 || Mathf.Abs (position2D.y) > 25))
+		{
+			position2D = Camera.main.transform.InverseTransformPoint (transform.position);
+			Quaternion newRot = Quaternion.AngleAxis (turnSpeed2D, Camera.main.transform.InverseTransformDirection( Camera.main.transform.right));
+			transform.rotation = transform.rotation * newRot;
+			counter += turnSpeed2D * Time.fixedDeltaTime;
+			yield return null;
+		}
+		immobilised = false;
+	}
+
+	void StartSinging()
+	{
+		song.SetActive (true);
+		if (!song.GetComponent<ParticleSystem> ().isEmitting) {
+			song.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmittingAndClear);
+		}
+		song.GetComponent<ParticleSystem> ().Play ();
+		isSinging = true;
+		song.SetActive (true);
+	}
+
+	void StopSinging()
+	{
+		isSinging = false;
+		song.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmitting);
+	}
+
+	void ResetSong() {
+		song.SetActive (false);
+		gameManager.ResetSong ();
 	}
 
 }
