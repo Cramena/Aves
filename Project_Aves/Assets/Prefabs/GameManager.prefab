@@ -170,5 +170,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  figure: {fileID: 1117502040123328, guid: eaf40a9a21bb61d418d14f5dc1b24eb7, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  figure: {fileID: 1843022458125770, guid: 3826219774c443f4e9dcbb077b78c91a, type: 2}
   currentFigure: {fileID: 0}

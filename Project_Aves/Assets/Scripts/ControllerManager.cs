@@ -113,7 +113,7 @@ public class ControllerManager : MonoBehaviour {
 	[SerializeField]
 	bool immobilised;
 	[SerializeField]
-	bool isSinging;
+	public bool isSinging;
 
 
 
@@ -197,9 +197,12 @@ public class ControllerManager : MonoBehaviour {
 
 	void UpdateRotation2D()
 	{
-		if (Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone)									//4.5f jours de code pour en arriver là
+		Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
+		if (/*Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone*/ input.magnitude >= deadzone)									//4.5f jours de code pour en arriver là
 		{
-			Quaternion turnRotation = Quaternion.Euler(Mathf.Atan2(-Input.GetAxis("Vertical"), Input.GetAxis("Horizontal")) * 180 / Mathf.PI, 90, 0);
+//			Vector2 input = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
+
+			Quaternion turnRotation = Quaternion.Euler(Mathf.Atan2(-input.y, input.x) * 180 / Mathf.PI, 90, 0);
 			turnRotation = Camera.main.transform.rotation * turnRotation;
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, turnRotation, turnSpeed2D);
 		}
@@ -398,7 +401,7 @@ public class ControllerManager : MonoBehaviour {
 
 	void CheckFor2D()
 	{
-		if (Input.GetButtonDown("Fire1") && (Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone))
+		if (Input.GetButtonDown("Fire1") && (Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone) && transform.position.y > 45)
 		{
 			if (is2D)
 			{
@@ -506,7 +509,6 @@ public class ControllerManager : MonoBehaviour {
 
 	void StartSinging()
 	{
-		print ("Sing");
 		song.SetActive (true);
 		if (!song.GetComponent<ParticleSystem> ().isEmitting) {
 			song.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmittingAndClear);

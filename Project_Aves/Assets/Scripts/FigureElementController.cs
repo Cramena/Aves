@@ -20,18 +20,16 @@ public class FigureElementController : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other)
 	{
-		print ("Wesh");
 		if (other.tag == "Player")
 		{
-			if (other.GetComponent<ControllerManager> ().playerIndex == 1)
-			{
-				myColor = color.blue;
+			if (other.GetComponent<ControllerManager> ().isSinging) {
+				if (other.GetComponent<ControllerManager> ().playerIndex == 1) {
+					myColor = color.blue;
+				} else {
+					myColor = color.red;
+				}
+				figure.ElementCompleted ();
 			}
-			else
-			{
-				myColor = color.red;
-			}
-			figure.ElementCompleted ();
 		}
 	}
 

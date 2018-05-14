@@ -35,6 +35,5 @@ public class GameManager : MonoBehaviour {
 
 	public void FigureComplete(GameObject figure) {
 		Destroy (figure);
-		print ("Done");
 	}
 }

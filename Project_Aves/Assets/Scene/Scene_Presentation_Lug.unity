@@ -18899,28 +18899,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 18
       objectReference: {fileID: 0}
-    - target: {fileID: 114611372711390244, guid: 419c4abe0544e3646bfbaf5f4cf825f5,
-        type: 2}
-      propertyPath: players.Array.data[0]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114611372711390244, guid: 419c4abe0544e3646bfbaf5f4cf825f5,
-        type: 2}
-      propertyPath: currentFigure
-      value: 
-      objectReference: {fileID: 114302291365095410, guid: eaf40a9a21bb61d418d14f5dc1b24eb7,
-        type: 2}
-    - target: {fileID: 114611372711390244, guid: 419c4abe0544e3646bfbaf5f4cf825f5,
-        type: 2}
-      propertyPath: figure
-      value: 
-      objectReference: {fileID: 1117502040123328, guid: eaf40a9a21bb61d418d14f5dc1b24eb7,
-        type: 2}
-    - target: {fileID: 114611372711390244, guid: 419c4abe0544e3646bfbaf5f4cf825f5,
-        type: 2}
-      propertyPath: players.Array.data[117]
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 419c4abe0544e3646bfbaf5f4cf825f5, type: 2}
   m_IsPrefabParent: 0
