@@ -1134,11 +1134,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60d5512ddb2bb64449ea3a2dbc95958f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postProcess: {fileID: 11400000, guid: f699f0f3fb5acd541ac96bb3f1d18164, type: 2}
-  blackAndWhite: 0
-  greyValue: 0.5
-  night: 0
   playerIndex: 1
+  cineCamera: {fileID: 114006680978830640}
+  noLenseDepthOfView: 5000
+  bawDepthOfView: 150
+  bawShader: {fileID: 0}
+  postProcess: {fileID: 0}
+  glowFlash: {fileID: 0}
+  noLenseProfile: {fileID: 11400000, guid: f699f0f3fb5acd541ac96bb3f1d18164, type: 2}
+  bawProfile: {fileID: 11400000, guid: 59f0a27ba62088448839ab490f201dd0, type: 2}
+  hasBawLense: 1
+  hasNightLense: 1
 --- !u!114 &114415697533835520
 MonoBehaviour:
   m_ObjectHideFlags: 1
