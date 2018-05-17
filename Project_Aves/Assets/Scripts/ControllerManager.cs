@@ -114,6 +114,7 @@ public class ControllerManager : MonoBehaviour {
 	bool immobilised;
 	[SerializeField]
 	public bool isSinging;
+	public float wrongSingTimer;
 
 
 
@@ -151,21 +152,26 @@ public class ControllerManager : MonoBehaviour {
 //			mainCam.m_LookAt = transform;
 //			mainCam.m_Follow = transform;
 		}
-		else if (!immobilised)
+		else 
 		{
-			CheckTurnBack2D ();
-			if (Input.GetAxis("RT") == 1 || Input.GetAxis("LT") == 1)
-			{
-				StartSinging ();
+			if (isSinging) {
+				if (wrongSingTimer < 1) {
+					wrongSingTimer += Time.deltaTime;
+				} else {
+					ResetSong ();
+				}
 			}
-			else if (isSinging)
-			{
-				StopSinging ();
+			if (!immobilised) {
+				CheckTurnBack2D ();
+				if (Input.GetAxis ("RT") == 1 || Input.GetAxis ("LT") == 1) {
+					StartSinging ();
+				} else if (isSinging) {
+					StopSinging ();
+				}
+				if (Input.GetButtonDown ("Fire2")) {
+					ResetSong ();
+				}
 			}
-			if (Input.GetButtonDown ("Fire2")) {
-				ResetSong ();
-			}
-
 		}
 
 //		CheckGround ();
