@@ -115,6 +115,7 @@ public class ControllerManager : MonoBehaviour {
 	[SerializeField]
 	public bool isSinging;
 	public float wrongSingTimer;
+	public bool songIsWrong;
 
 
 
@@ -158,7 +159,8 @@ public class ControllerManager : MonoBehaviour {
 				if (wrongSingTimer < 1) {
 					wrongSingTimer += Time.deltaTime;
 				} else {
-					ResetSong ();
+					wrongSingTimer = 0;
+					songIsWrong = true;
 				}
 			}
 			if (!immobilised) {
@@ -247,7 +249,7 @@ public class ControllerManager : MonoBehaviour {
 			Quaternion rotation = Quaternion.LookRotation (xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if (Mathf.Abs(transform.forward.y) > 0.1f && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone)
+		if ((Mathf.Abs(transform.forward.y) > 0.1f || Mathf.Sign(transform.up.y) < 0) && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone)
 		{
 			CheckResetZAngle ();
 		}
@@ -422,7 +424,7 @@ public class ControllerManager : MonoBehaviour {
 		}
 	}
 
-	void Initialize2D()
+	public void Initialize2D()
 	{
 		is2D = true;
 		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
@@ -468,7 +470,7 @@ public class ControllerManager : MonoBehaviour {
 		immobilised = false;
 	}
 
-	void Initialize3D()
+	public void Initialize3D()
 	{
 		is2D = false;
 		StartCoroutine(TransitionTo3D ());
@@ -530,10 +532,15 @@ public class ControllerManager : MonoBehaviour {
 	{
 		isSinging = false;
 		song.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmitting);
+		wrongSingTimer = 0;
+		if (songIsWrong) {
+			ResetSong ();
+		}
 	}
 
 	void ResetSong() {
 		song.SetActive (false);
+		songIsWrong = false;
 		gameManager.ResetSong ();
 	}
 

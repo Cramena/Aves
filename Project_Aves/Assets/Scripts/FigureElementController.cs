@@ -15,7 +15,8 @@ public class FigureElementController : MonoBehaviour {
 	FigureController figure;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 		figure = transform.parent.GetComponent<FigureController> ();
 	}
 
@@ -24,13 +25,18 @@ public class FigureElementController : MonoBehaviour {
 		ControllerManager player = other.GetComponent<ControllerManager> ();
 		if (other.tag == "Player")
 		{
-			if (player.isSinging) {
-				if (player.playerIndex == 1) {
+			if (player.isSinging)
+			{
+				if (player.playerIndex == 1)
+				{
 					myColor = color.blue;
-				} else {
+				}
+				else
+				{
 					myColor = color.red;
 				}
-				if (myColor == targetColor) {
+				if (myColor == targetColor)
+				{
 					player.wrongSingTimer = 0;
 				}
 				figure.ElementCompleted ();

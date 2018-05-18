@@ -22,6 +22,22 @@ public class GameManager : MonoBehaviour {
 		players.Add (player);
 	}
 
+	public void CheckTransitionTo2D()
+	{
+		if (players.Count == 1)
+		{
+			players [0].Initialize2D ();
+		}
+	}
+
+	public void CheckTransitionTo3D()
+	{
+		if (players.Count == 1)
+		{
+			players [0].Initialize3D ();
+		}
+	}
+
 	public void CreateFigure()
 	{
 		Vector3 figurePostion = Camera.main.transform.position + (Camera.main.transform.forward * Camera.main.GetComponent<CameraController> ().distance2D);
