@@ -117,8 +117,7 @@ public class ControllerManager : MonoBehaviour {
 	public float wrongSingTimer;
 	public bool songIsWrong;
 
-
-
+	
     void Start ()
     {
 		gameManager.AddPlayer (this);
@@ -429,8 +428,12 @@ public class ControllerManager : MonoBehaviour {
 		is2D = true;
 		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
 		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
-
+		/*
 		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
+		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
+		StartCoroutine(TransitionTo2D (final2DRotation));
+		*/
+		Vector3 rightNoY = new Vector3 (gameManager.axisRight.x, 0, gameManager.axisRight.z);
 		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
 		StartCoroutine(TransitionTo2D (final2DRotation));
 	}

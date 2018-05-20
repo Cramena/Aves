@@ -7,6 +7,12 @@ public class GameManager : MonoBehaviour {
 	public List<ControllerManager> players;
 	public GameObject figure;
 	public FigureController currentFigure;
+	ControllerManager readyPlayer;
+	public Vector3 axis;
+	public Vector3 axisRight;
+	public Vector3 axisLeft;
+	public Vector3 axisBack;
+
 
 
 	public void AddPlayer(ControllerManager player)
@@ -22,19 +28,40 @@ public class GameManager : MonoBehaviour {
 		players.Add (player);
 	}
 
-	public void CheckTransitionTo2D()
+	public void CheckTransitionTo2D(ControllerManager _caller)
 	{
 		if (players.Count == 1)
 		{
 			players [0].Initialize2D ();
+			axis = players[0].transform.forward;
 		}
+		else if (players.Count > 1)
+        {
+			if (readyPlayer == null)
+			{
+				readyPlayer = _caller;
+			}
+			else if(readyPlayer != _caller)
+			{
+				Vector3 f1 = players[0].transform.forward;
+				Vector3 f2 = players[1].transform.forward;
+				axis = Vector3.Cross(f1, f2);
+				for (int i = 0; i < players.Count; i++)
+				{
+					players[i].Initialize2D();
+				}
+			}
+        }
+		axisRight = new Vector3(-axis.z, axis.y, axis.x);
+		axisLeft = new Vector3(axis.z, axis.y, -axis.x);
+		axisBack = -axis;
 	}
 
 	public void CheckTransitionTo3D()
 	{
-		if (players.Count == 1)
+		for (int i = 0; i < players.Count; i++)
 		{
-			players [0].Initialize3D ();
+			players[i].Initialize3D();
 		}
 	}
 
@@ -49,7 +76,8 @@ public class GameManager : MonoBehaviour {
 		currentFigure.Reset ();
 	}
 
-	public void FigureComplete(GameObject figure) {
+	public void FigureComplete(GameObject figure)
+	{
 		Destroy (figure);
 	}
 }
