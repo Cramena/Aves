@@ -21,7 +21,7 @@ public class ControllerManager : MonoBehaviour {
 	public int playerIndex;
 	[Tooltip("How much the player must move the stick to activate it. Too low and it will be activated when the player isn't touching it. Too high and  the player won't be able to make subtle moves.")]
 	[Range(0.1f, 0.9f)]
-	public float deadzone = 0.2f;
+	public float deadzone = 0.25f;
 
 	[Space]
 	[Header("Speed variables")]
@@ -114,9 +114,10 @@ public class ControllerManager : MonoBehaviour {
 	bool immobilised;
 	[SerializeField]
 	public bool isSinging;
+	public float wrongSingTimer;
+	public bool songIsWrong;
 
-
-
+	
     void Start ()
     {
 		gameManager.AddPlayer (this);
@@ -151,21 +152,27 @@ public class ControllerManager : MonoBehaviour {
 //			mainCam.m_LookAt = transform;
 //			mainCam.m_Follow = transform;
 		}
-		else if (!immobilised)
+		else 
 		{
-			CheckTurnBack2D ();
-			if (Input.GetAxis("RT") == 1 || Input.GetAxis("LT") == 1)
-			{
-				StartSinging ();
+			if (isSinging) {
+				if (wrongSingTimer < 1) {
+					wrongSingTimer += Time.deltaTime;
+				} else {
+					wrongSingTimer = 0;
+					songIsWrong = true;
+				}
 			}
-			else if (isSinging)
-			{
-				StopSinging ();
+			if (!immobilised) {
+				CheckTurnBack2D ();
+				if (Input.GetAxis ("RT") == 1 || Input.GetAxis ("LT") == 1) {
+					StartSinging ();
+				} else if (isSinging) {
+					StopSinging ();
+				}
+				if (Input.GetButtonDown ("Fire2")) {
+					ResetSong ();
+				}
 			}
-			if (Input.GetButtonDown ("Fire2")) {
-				ResetSong ();
-			}
-
 		}
 
 //		CheckGround ();
@@ -201,6 +208,8 @@ public class ControllerManager : MonoBehaviour {
 		if (/*Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone*/ input.magnitude >= deadzone)									//4.5f jours de code pour en arriver là
 		{
 //			Vector2 input = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
+
+			input = input.normalized * ((input.magnitude - deadzone) / (1 - deadzone));
 
 			Quaternion turnRotation = Quaternion.Euler(Mathf.Atan2(-input.y, input.x) * 180 / Mathf.PI, 90, 0);
 			turnRotation = Camera.main.transform.rotation * turnRotation;
@@ -239,7 +248,7 @@ public class ControllerManager : MonoBehaviour {
 			Quaternion rotation = Quaternion.LookRotation (xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if (Mathf.Abs(transform.forward.y) > 0.1f && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone)
+		if ((Mathf.Abs(transform.forward.y) > 0.1f || Mathf.Sign(transform.up.y) < 0) && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone)
 		{
 			CheckResetZAngle ();
 		}
@@ -414,13 +423,17 @@ public class ControllerManager : MonoBehaviour {
 		}
 	}
 
-	void Initialize2D()
+	public void Initialize2D()
 	{
 		is2D = true;
 		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
 		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
-
+		/*
 		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
+		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
+		StartCoroutine(TransitionTo2D (final2DRotation));
+		*/
+		Vector3 rightNoY = new Vector3 (gameManager.axisRight.x, 0, gameManager.axisRight.z);
 		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
 		StartCoroutine(TransitionTo2D (final2DRotation));
 	}
@@ -460,7 +473,7 @@ public class ControllerManager : MonoBehaviour {
 		immobilised = false;
 	}
 
-	void Initialize3D()
+	public void Initialize3D()
 	{
 		is2D = false;
 		StartCoroutine(TransitionTo3D ());
@@ -522,10 +535,15 @@ public class ControllerManager : MonoBehaviour {
 	{
 		isSinging = false;
 		song.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmitting);
+		wrongSingTimer = 0;
+		if (songIsWrong) {
+			ResetSong ();
+		}
 	}
 
 	void ResetSong() {
 		song.SetActive (false);
+		songIsWrong = false;
 		gameManager.ResetSong ();
 	}
 

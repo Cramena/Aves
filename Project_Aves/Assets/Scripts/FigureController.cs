@@ -9,6 +9,10 @@ public class FigureController : MonoBehaviour {
 	public FigureElementController[] redElements;
 	public GameManager manager;
 
+	void Start() {
+		InitializeTargetColors ();
+	}
+
 	public void ElementCompleted()
 	{
 		bool blueComplete = true;
@@ -35,13 +39,25 @@ public class FigureController : MonoBehaviour {
 
 	public void Reset()
 	{
+		ResetSpecific (blueElements);
+		ResetSpecific (redElements);
+	}
+
+	public void ResetSpecific (FigureElementController[] elements) {
+		for (int x = 0; x < elements.Length; x++)
+		{
+			elements [x].myColor = color.nothing;	
+		}
+	}
+
+	public void InitializeTargetColors()  {
 		for (int x = 0; x < blueElements.Length; x++)
 		{
-			blueElements [x].myColor = color.nothing;	
+			blueElements [x].targetColor = color.blue;	
 		}
-		for (int y = 0; y < redElements.Length; y++)
+		for (int x = 0; x < redElements.Length; x++)
 		{
-			redElements [y].myColor = color.nothing;	
+			redElements [x].targetColor = color.red;	
 		}
 	}
 
