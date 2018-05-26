@@ -120,7 +120,7 @@ public class ControllerManager : MonoBehaviour {
 	
     void Start ()
     {
-		gameManager.AddPlayer (this);
+		//gameManager.AddPlayer (this);
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
 		rigidbody = GetComponent<Rigidbody> ();
@@ -414,16 +414,11 @@ public class ControllerManager : MonoBehaviour {
 		{
 			if (is2D)
 			{
-<<<<<<< HEAD
-				
 				//gameManager.CheckTransitionTo3D();
-=======
-				Initialize3D ();
->>>>>>> parent of 7d97277... Merge branch 'master' into Matthias
 			}
 			else
 			{
-				Initialize2D ();
+
 			}
 		}
 	}

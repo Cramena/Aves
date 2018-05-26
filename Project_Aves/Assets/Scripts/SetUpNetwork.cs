@@ -6,12 +6,9 @@ using UnityEngine.Networking;
 public class SetUpNetwork : NetworkBehaviour {
 
 	public Behaviour[] componentsToDisable;
+	GameManager gameManager;
+	public string ID;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> parent of 7d97277... Merge branch 'master' into Matthias
-	// Use this for initialization
 	void Start ()
 	{
 		if (!isLocalPlayer)
@@ -22,13 +19,12 @@ public class SetUpNetwork : NetworkBehaviour {
 			}
 		}
 	}
-<<<<<<< HEAD
-	
+
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
 		ID = GetComponent<NetworkIdentity>().netId.ToString();
-		gameManager = GameObject.Find("GameManager1").GetComponent<GameManager>();
+		gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 		//GameManager.players.Add("Player " + ID, this);
 		gameManager.AddPlayer(this);
 	}
@@ -37,6 +33,4 @@ public class SetUpNetwork : NetworkBehaviour {
 	{
 		GameManager.players.Remove("Player " + ID);
 	}
-=======
->>>>>>> parent of 7d97277... Merge branch 'master' into Matthias
 }
