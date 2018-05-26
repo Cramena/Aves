@@ -9,43 +9,43 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1764266731040348}
+  m_RootGameObject: {fileID: 1395459727024986}
   m_IsPrefabParent: 1
---- !u!1 &1764266731040348
+--- !u!1 &1395459727024986
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4274897320359780}
-  - component: {fileID: 114611372711390244}
+  - component: {fileID: 4312711245232434}
+  - component: {fileID: 114657009174912274}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: GameManager1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4274897320359780
+--- !u!4 &4312711245232434
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1764266731040348}
+  m_GameObject: {fileID: 1395459727024986}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 33.90657, y: 59.07338, z: 54.403492}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114611372711390244
+--- !u!114 &114657009174912274
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1764266731040348}
+  m_GameObject: {fileID: 1395459727024986}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b29230cb4966ee44dbb38fc169d34122, type: 3}
@@ -54,7 +54,7 @@ MonoBehaviour:
   players: []
   figure: {fileID: 1994920004161078, guid: 4c8ce4b65fe6cab4b977040f94b3f624, type: 2}
   currentFigure: {fileID: 0}
-  axis: {x: -0.40861902, y: 0, z: 0.8212946}
-  axisRight: {x: -0.8212946, y: 0, z: -0.40861902}
-  axisLeft: {x: 0.8212946, y: 0, z: 0.40861902}
-  axisBack: {x: 0.40861902, y: -0, z: -0.8212946}
+  axis: {x: 0, y: 0, z: -1}
+  axisRight: {x: 1, y: 0, z: 0}
+  axisLeft: {x: -1, y: 0, z: -0}
+  axisBack: {x: -0, y: -0, z: 1}

@@ -129,7 +129,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1422520063267318
 GameObject:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -410,7 +410,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4077749449072584
 Transform:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1422520063267318}
@@ -1250,7 +1250,7 @@ MonoBehaviour:
   postProcess: {fileID: 11400000, guid: f699f0f3fb5acd541ac96bb3f1d18164, type: 2}
   lookAt: {fileID: 0}
   song: {fileID: 1903421239171996}
-  gameManager: {fileID: 114611372711390244, guid: 419c4abe0544e3646bfbaf5f4cf825f5,
+  gameManager: {fileID: 114657009174912274, guid: 2330f5f599c036a4996ad25dc9f5eeda,
     type: 2}
   playerIndex: 1
   deadzone: 0.6
@@ -1288,7 +1288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
 --- !u!114 &114194475792770506
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1422520063267318}
@@ -1336,7 +1336,7 @@ MonoBehaviour:
   - {fileID: 114006680978830640}
 --- !u!114 &114317122130479132
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1850099321443376}
@@ -1600,7 +1600,7 @@ MonoBehaviour:
   m_InterpolateMovement: 0.6
 --- !u!114 &114710512940225244
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 3
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1422520063267318}
