@@ -6,8 +6,11 @@ using UnityEngine.Networking;
 public class SetUpNetwork : NetworkBehaviour {
 
 	public Behaviour[] componentsToDisable;
-	public GameManager gameManager;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> parent of 7d97277... Merge branch 'master' into Matthias
 	// Use this for initialization
 	void Start ()
 	{
@@ -19,6 +22,7 @@ public class SetUpNetwork : NetworkBehaviour {
 			}
 		}
 	}
+<<<<<<< HEAD
 	
 	public override void OnStartClient()
 	{
@@ -33,4 +37,6 @@ public class SetUpNetwork : NetworkBehaviour {
 	{
 		GameManager.players.Remove("Player " + ID);
 	}
+=======
+>>>>>>> parent of 7d97277... Merge branch 'master' into Matthias
 }

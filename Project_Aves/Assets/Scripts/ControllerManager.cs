@@ -9,7 +9,6 @@ public class ControllerManager : MonoBehaviour {
 	public x360_Gamepad gamepad;
 	private GamepadManager manager;
 
-	public SetUpNetwork player;
 	public CinemachineFreeLook mainCam;
 	public PostProcessingProfile postProcess;
 	public Transform lookAt;
@@ -121,7 +120,7 @@ public class ControllerManager : MonoBehaviour {
 	
     void Start ()
     {
-		//gameManager.AddPlayer (this);
+		gameManager.AddPlayer (this);
 		manager = GamepadManager.Instance;
 		gamepad=manager.GetGamepad(playerIndex);
 		rigidbody = GetComponent<Rigidbody> ();
@@ -411,23 +410,26 @@ public class ControllerManager : MonoBehaviour {
 
 	void CheckFor2D()
 	{
-		if (Input.GetButtonDown("Fire1") && (Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone))
+		if (Input.GetButtonDown("Fire1") && (Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone) && transform.position.y > 45)
 		{
 			if (is2D)
 			{
+<<<<<<< HEAD
 				
 				//gameManager.CheckTransitionTo3D();
+=======
+				Initialize3D ();
+>>>>>>> parent of 7d97277... Merge branch 'master' into Matthias
 			}
-			else if (transform.position.y > 45)
+			else
 			{
-				//gameManager.CheckTransitionTo2D(this);
+				Initialize2D ();
 			}
 		}
 	}
 
 	public void Initialize2D()
 	{
-		//if (gameManager.axis = )
 		is2D = true;
 		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
 		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
@@ -436,8 +438,8 @@ public class ControllerManager : MonoBehaviour {
 		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
 		StartCoroutine(TransitionTo2D (final2DRotation));
 		*/
-		Vector3 rightNoY = gameManager.axisRight;
-		Quaternion final2DRotation = Quaternion.LookRotation (gameManager.axisRight, Vector2.up);
+		Vector3 rightNoY = new Vector3 (gameManager.axisRight.x, 0, gameManager.axisRight.z);
+		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
 		StartCoroutine(TransitionTo2D (final2DRotation));
 	}
 
@@ -471,7 +473,7 @@ public class ControllerManager : MonoBehaviour {
 			counter = Mathf.Clamp (counter, 0, 1);
 			yield return null;
 		}
-		//gameManager.CreateFigure ();
+		gameManager.CreateFigure ();
 		transform.rotation = final2DRotation;
 		immobilised = false;
 	}
