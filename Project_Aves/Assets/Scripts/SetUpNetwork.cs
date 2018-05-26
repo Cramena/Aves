@@ -8,8 +8,6 @@ public class SetUpNetwork : NetworkBehaviour {
 	public Behaviour[] componentsToDisable;
 	public GameManager gameManager;
 
-	public string ID;
-
 	// Use this for initialization
 	void Start ()
 	{
@@ -21,7 +19,7 @@ public class SetUpNetwork : NetworkBehaviour {
 			}
 		}
 	}
-
+	
 	public override void OnStartClient()
 	{
 		base.OnStartClient();
