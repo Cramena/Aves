@@ -5,6 +5,8 @@ using Cinemachine;
 
 public class CameraController : MonoBehaviour
 {
+	public GameManager gameManager;
+	public GameManager secondCam;
 
 	public float distance2D = 50;
 	public float transitionSpeed = 4;
@@ -20,7 +22,7 @@ public class CameraController : MonoBehaviour
 
 	void Start()
     {
-
+		gameManager = GameObject.Find("GameManager1").GetComponent<GameManager>();
     }
 
     void FixedUpdate()
@@ -32,11 +34,15 @@ public class CameraController : MonoBehaviour
 
 	void Transitionning() {
 		if (transitionTimer < 1) {
-			transform.forward = Vector3.Slerp (initialDirection, direction2D, transitionTimer);
+			transform.forward = Vector3.Lerp (initialDirection, direction2D, transitionTimer);
 			transform.position = Vector3.Lerp (initialPosition, endPosition, transitionTimer);
+			secondCam.transform.position = transform.position;
+			secondCam.transform.rotation = transform.rotation;
 			transitionTimer += Time.fixedDeltaTime * transitionSpeed;
 		} else {
 			Camera.main.fieldOfView = 60;
+			transform.forward = direction2D;
+			transform.position = endPosition;
 //			print(Vector3.Distance(GameObject.Find("Player").transform.position, endPosition));
 		}
 	}
@@ -46,13 +52,15 @@ public class CameraController : MonoBehaviour
 		transform.rotation = Quaternion.LookRotation(_playerPosition - _cinemachine.transform.position);
 		is2D = true;
 		transitionTimer = 0;
-		direction2D = new Vector3 (-_playerDirection.x, 0, -_playerDirection.z);
+		direction2D = /*endPosition - _playerPosition;*//*-gameManager.axis;*/new Vector3 (-_playerDirection.x, 0, -_playerDirection.z);
 		playerStartPosition = _playerPosition;
 		playerStartDirection = _playerDirection;
 		initialPosition = transform.position;
 		initialDirection = transform.forward;
-		endPosition = playerStartPosition + (new Vector3(playerStartDirection.x, 0, playerStartDirection.z).normalized * distance2D);
-//		print(Vector3.Distance(GameObject.Find("Player").transform.position, endPosition));
+		//endPosition = playerStartPosition + (gameManager.axis * distance2D);
+		endPosition = playerStartPosition + (playerStartDirection * distance2D);
+		//		print(Vector3.Distance(GameObject.Find("Player").transform.position, endPosition));
+		print("Axis : " + gameManager.axis);
 	}
 
 }

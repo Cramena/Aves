@@ -51,7 +51,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b29230cb4966ee44dbb38fc169d34122, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  players:
-  - {fileID: 0}
+  players: []
   figure: {fileID: 1994920004161078, guid: 4c8ce4b65fe6cab4b977040f94b3f624, type: 2}
   currentFigure: {fileID: 0}
+  axis: {x: -0.40861902, y: 0, z: 0.8212946}
+  axisRight: {x: -0.8212946, y: 0, z: -0.40861902}
+  axisLeft: {x: 0.8212946, y: 0, z: 0.40861902}
+  axisBack: {x: 0.40861902, y: -0, z: -0.8212946}
