@@ -22,11 +22,6 @@ public class SetUpNetwork : NetworkBehaviour {
 		}
 	}
 
-	public void Ready()
-	{
-
-	}
-
 	public override void OnStartClient()
 	{
 		base.OnStartClient();

@@ -415,6 +415,7 @@ public class ControllerManager : MonoBehaviour {
 		{
 			if (is2D)
 			{
+				
 				//gameManager.CheckTransitionTo3D();
 			}
 			else if (transform.position.y > 45)
