@@ -11,8 +11,10 @@ public class LensesEditor : Editor {
 		DrawDefaultInspector ();
 
 		LensesManager lenses = (LensesManager)target;
+        /*
 		if (GUILayout.Button ("Reset post process values")) {
 			lenses.InitializeSettings ();
 		}
+        */
 	}
 }

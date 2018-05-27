@@ -1,7 +1,5 @@
 fileFormatVersion: 2
 guid: 7d61e4ac607b7f24797635947ce369ac
-timeCreated: 1519296891
-licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
@@ -13,6 +11,7 @@ ModelImporter:
     2300000: Box054
     3300000: Box054
     4300000: Box054
+    2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -32,6 +31,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5

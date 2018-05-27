@@ -13,10 +13,16 @@ TagManager:
   - UI
   - 
   - 
+  - Song
+<<<<<<< HEAD
+  - CraneDayLight
+  - CraneNightLight
+  - OwlDayLight
+=======
+  - OtherBird
   - 
   - 
-  - 
-  - 
+>>>>>>> master
   - 
   - 
   - 

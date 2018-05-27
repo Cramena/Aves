@@ -1,7 +1,5 @@
 fileFormatVersion: 2
 guid: 88e633f0d94d30e4f9e98d7deefd086b
-timeCreated: 1520422167
-licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
@@ -661,6 +659,7 @@ ModelImporter:
     4300246: Box238
     4300248: Box239
     4300250: Box240
+    2186277476908879412: ImportLogs
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -680,6 +679,7 @@ ModelImporter:
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5

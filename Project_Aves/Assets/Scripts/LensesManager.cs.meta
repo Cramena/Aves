@@ -1,11 +1,14 @@
 fileFormatVersion: 2
 guid: 60d5512ddb2bb64449ea3a2dbc95958f
-timeCreated: 1520374777
+timeCreated: 1525626307
 licenseType: Free
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - bawShader: {instanceID: 0}
+  - postProcess: {instanceID: 0}
+  - bawProfile: {fileID: 11400000, guid: 59f0a27ba62088448839ab490f201dd0, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
