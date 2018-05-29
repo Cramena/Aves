@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.PostProcessing;
+using UnityEngine.Networking;
 
-public class ControllerManager : MonoBehaviour {
-	
+public class ControllerManager : NetworkBehaviour
+{
+
 	public x360_Gamepad gamepad;
 	private GamepadManager manager;
 
+	public SetUpNetwork network;
+
+	public SetUpNetwork player;
 	public CinemachineFreeLook mainCam;
 	public PostProcessingProfile postProcess;
 	public Transform lookAt;
@@ -28,7 +33,7 @@ public class ControllerManager : MonoBehaviour {
 	[Space]
 
 	[SerializeField]
-    float speed = 5.0f;
+	float speed = 5.0f;
 	[Tooltip("The speed at which speed is sped up.")]
 	[Range(0.01f, 100)]
 	public float acceleration = 15.0f;
@@ -107,7 +112,7 @@ public class ControllerManager : MonoBehaviour {
 	float resetLoopingTimer;
 	Quaternion initialRotation;
 	bool isResetting;
-    float eulerAngZ;
+	float eulerAngZ;
 	[SerializeField]
 	bool is2D;
 	[SerializeField]
@@ -117,15 +122,15 @@ public class ControllerManager : MonoBehaviour {
 	public float wrongSingTimer;
 	public bool songIsWrong;
 
-	
-    void Start ()
-    {
+
+	void Start()
+	{
 		//gameManager.AddPlayer (this);
 		manager = GamepadManager.Instance;
-		gamepad=manager.GetGamepad(playerIndex);
-		rigidbody = GetComponent<Rigidbody> ();
-		song.SetActive (false);
-		InitializeVariables ();
+		gamepad = manager.GetGamepad(playerIndex);
+		rigidbody = GetComponent<Rigidbody>();
+		song.SetActive(false);
+		InitializeVariables();
 	}
 
 	void InitializeVariables()
@@ -134,56 +139,65 @@ public class ControllerManager : MonoBehaviour {
 		mainCam.m_Lens.FieldOfView = myFieldOfView;
 	}
 
-    void Update ()
-    {
-		UpdateSpeed ();
+	void Update()
+	{
+		UpdateSpeed();
 
-		AccelerateOrDecelerate ();
+		AccelerateOrDecelerate();
 
 		if (!is2D)
 		{
 			if (!immobilised)
 			{
-				UpdateFOV ();
+				UpdateFOV();
 
-				UpdateChromaticAberration ();
+				UpdateChromaticAberration();
 			}
 
-//			mainCam.m_LookAt = transform;
-//			mainCam.m_Follow = transform;
+			//            mainCam.m_LookAt = transform;
+			//            mainCam.m_Follow = transform;
 		}
-		else 
+		else
 		{
-			if (isSinging) {
-				if (wrongSingTimer < 1) {
+			if (isSinging)
+			{
+				if (wrongSingTimer < 1)
+				{
 					wrongSingTimer += Time.deltaTime;
-				} else {
+				}
+				else
+				{
 					wrongSingTimer = 0;
 					songIsWrong = true;
 				}
 			}
-			if (!immobilised) {
-				CheckTurnBack2D ();
-				if (Input.GetAxis ("RT") == 1 || Input.GetAxis ("LT") == 1) {
-					StartSinging ();
-				} else if (isSinging) {
-					StopSinging ();
+			if (!immobilised)
+			{
+				CheckTurnBack2D();
+				if (Input.GetAxis("RT") == 1 || Input.GetAxis("LT") == 1)
+				{
+					StartSinging();
 				}
-				if (Input.GetButtonDown ("Fire2")) {
-					ResetSong ();
+				else if (isSinging)
+				{
+					StopSinging();
+				}
+				if (Input.GetButtonDown("Fire2"))
+				{
+					ResetSong();
 				}
 			}
 		}
 
-//		CheckGround ();
+		//        CheckGround ();
 
-		CheckRecenter ();
+		CheckRecenter();
 
-		CheckFor2D ();
+		CheckFor2D();
 
-		UpdateRecenterHeading ();
+		UpdateRecenterHeading();
 
-    }
+	}
 
 	void FixedUpdate()
 	{
@@ -191,23 +205,23 @@ public class ControllerManager : MonoBehaviour {
 		{
 			if (!is2D)
 			{
-				UpdateRotation ();
+				UpdateRotation();
 			}
 			else
 			{
-				UpdateRotation2D ();
+				UpdateRotation2D();
 			}
 		}
 
-		Move ();
+		Move();
 	}
 
 	void UpdateRotation2D()
 	{
-		Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
-		if (/*Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone*/ input.magnitude >= deadzone)									//4.5f jours de code pour en arriver là
+		Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		if (/*Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone*/ input.magnitude >= deadzone)                                    //4.5f jours de code pour en arriver là
 		{
-//			Vector2 input = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
+			//            Vector2 input = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
 
 			input = input.normalized * ((input.magnitude - deadzone) / (1 - deadzone));
 
@@ -220,9 +234,9 @@ public class ControllerManager : MonoBehaviour {
 	void UpdateRotation()
 	{
 		eulerAngZ = transform.localEulerAngles.z;
-		if (Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone)
+		if (Mathf.Abs(Input.GetAxis("Horizontal")) >= deadzone)
 		{
-			if ((eulerAngZ < 180 && eulerAngZ > 45 && Mathf.Sign (Input.GetAxis("Horizontal")) == -1) || (eulerAngZ > 180 && eulerAngZ < 320 && Mathf.Sign (Input.GetAxis("Horizontal")) == 1))
+			if ((eulerAngZ < 180 && eulerAngZ > 45 && Mathf.Sign(Input.GetAxis("Horizontal")) == -1) || (eulerAngZ > 180 && eulerAngZ < 320 && Mathf.Sign(Input.GetAxis("Horizontal")) == 1))
 			{
 				zRotation = 0;
 			}
@@ -231,30 +245,30 @@ public class ControllerManager : MonoBehaviour {
 				zRotation = -Input.GetAxis("Horizontal") * turnSpeed * 2;
 			}
 
-			Quaternion yRotator = Quaternion.AngleAxis ((Input.GetAxis("Horizontal") - deadzone * Mathf.Sign(Input.GetAxis("Horizontal"))) * turnSpeed, Vector3.up);
+			Quaternion yRotator = Quaternion.AngleAxis((Input.GetAxis("Horizontal") - deadzone * Mathf.Sign(Input.GetAxis("Horizontal"))) * turnSpeed, Vector3.up);
 			transform.rotation = yRotator * transform.rotation;
-			Quaternion zRotator = Quaternion.AngleAxis (zRotation, transform.forward);
+			Quaternion zRotator = Quaternion.AngleAxis(zRotation, transform.forward);
 			transform.rotation = zRotator * transform.rotation;
 		}
 
-		if (Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone)
+		if (Mathf.Abs(Input.GetAxis("Vertical")) >= deadzone)
 		{
 			if (loopingTimer != 0)
 			{
 				loopingTimer = 0f;
 			}
 
-			Quaternion xRotator = Quaternion.AngleAxis (Input.GetAxis("Vertical") * turnSpeed, transform.right);
-			Quaternion rotation = Quaternion.LookRotation (xRotator * transform.forward, transform.up);
+			Quaternion xRotator = Quaternion.AngleAxis(Input.GetAxis("Vertical") * turnSpeed, transform.right);
+			Quaternion rotation = Quaternion.LookRotation(xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if ((Mathf.Abs(transform.forward.y) > 0.1f || Mathf.Sign(transform.up.y) < 0) && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone)
+		if ((Mathf.Abs(transform.forward.y) > 0.1f || Mathf.Sign(transform.up.y) < 0) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone)
 		{
-			CheckResetZAngle ();
+			CheckResetZAngle();
 		}
 		if (isResetting)
 		{
-			ResetZAngle ();
+			ResetZAngle();
 		}
 	}
 
@@ -274,17 +288,17 @@ public class ControllerManager : MonoBehaviour {
 
 	void ResetZAngle()
 	{
-		if (resetLoopingTimer < 1 && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone && Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone)
+		if (resetLoopingTimer < 1 && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone)
 		{
 			loopingTimer = 0;
 			resetLoopingTimer += 1.0f * Time.fixedDeltaTime;
 			Quaternion rotation;
-//			if (Mathf.Abs (transform.forward.y) > 0.3f) {
-//				rotation = Quaternion.LookRotation (new Vector3 (transform.forward.x, 0, transform.forward.z), Vector3.up);
-//			} else {
-			rotation = Quaternion.LookRotation (new Vector3(transform.forward.x, 0, transform.forward.z), Vector3.up);
-//			}
-			transform.rotation = Quaternion.Slerp (initialRotation, rotation, resetLoopingTimer);
+			//            if (Mathf.Abs (transform.forward.y) > 0.3f) {
+			//                rotation = Quaternion.LookRotation (new Vector3 (transform.forward.x, 0, transform.forward.z), Vector3.up);
+			//            } else {
+			rotation = Quaternion.LookRotation(new Vector3(transform.forward.x, 0, transform.forward.z), Vector3.up);
+			//            }
+			transform.rotation = Quaternion.Slerp(initialRotation, rotation, resetLoopingTimer);
 		}
 		else
 		{
@@ -295,7 +309,7 @@ public class ControllerManager : MonoBehaviour {
 
 	void UpdateRecenterHeading()
 	{
-		if (Mathf.Abs (Input.GetAxis("Horizontal")) > deadzone || Mathf.Abs (Input.GetAxis("Vertical")) > deadzone)
+		if (Mathf.Abs(Input.GetAxis("Horizontal")) > deadzone || Mathf.Abs(Input.GetAxis("Vertical")) > deadzone)
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = true;
 		}
@@ -303,9 +317,9 @@ public class ControllerManager : MonoBehaviour {
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = false;
 		}
-		
+
 	}
-		
+
 	void UpdateSpeed()
 	{
 		previousSpeed = speed;
@@ -318,13 +332,13 @@ public class ControllerManager : MonoBehaviour {
 			accelerationModifiyer = 2;
 		}
 
-//		if (Mathf.Abs (gamepad.GetStick_L ().X) > .7f) {
-//			speed += -transform.forward.y * Time.deltaTime * acceleration / accelerationModifiyer - turningSlowingAmount * Time.deltaTime;
-//			speed = Mathf.Clamp (speed, minimumSpeedTurning, maximumSpeed);
-//		} else {
+		//        if (Mathf.Abs (gamepad.GetStick_L ().X) > .7f) {
+		//            speed += -transform.forward.y * Time.deltaTime * acceleration / accelerationModifiyer - turningSlowingAmount * Time.deltaTime;
+		//            speed = Mathf.Clamp (speed, minimumSpeedTurning, maximumSpeed);
+		//        } else {
 		speed += (-transform.forward.y + speedModifiyer) * Time.deltaTime * acceleration / accelerationModifiyer;
-			speed = Mathf.Clamp(speed, minimumSpeed, maximumSpeed);
-//		}
+		speed = Mathf.Clamp(speed, minimumSpeed, maximumSpeed);
+		//        }
 
 	}
 
@@ -332,7 +346,7 @@ public class ControllerManager : MonoBehaviour {
 	{
 		if (/*gamepad.GetTrigger_L () > deadzone*/Input.GetAxis("RT") > deadzone)
 		{
-			speedModifiyer =- 5f;
+			speedModifiyer = -5f;
 		}
 		else if (/*gamepad.GetTrigger_R () > deadzone*/Input.GetAxis("LT") > deadzone)
 		{
@@ -346,7 +360,7 @@ public class ControllerManager : MonoBehaviour {
 
 	void Move()
 	{
-		rigidbody.velocity =  transform.forward * speed;
+		rigidbody.velocity = transform.forward * speed;
 	}
 
 	void UpdateFOV()
@@ -376,29 +390,29 @@ public class ControllerManager : MonoBehaviour {
 	{
 		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
 		/*if (accelerationModifiyer == 1)
-		{*/
+        {*/
 		chromaticAberration.intensity = ((speed - minimumSpeed) / (maximumSpeed - minimumSpeed)) * maximumAberration;
 		/*}
-		else
-		{
-			chromaticAberration.intensity -= Time.deltaTime;
-		}*/
+        else
+        {
+            chromaticAberration.intensity -= Time.deltaTime;
+        }*/
 		postProcess.chromaticAberration.settings = chromaticAberration;
 	}
 
 	void CheckGround()
 	{
-		float terrainHeight = Terrain.activeTerrain.SampleHeight(transform.position); 
+		float terrainHeight = Terrain.activeTerrain.SampleHeight(transform.position);
 
 		if (terrainHeight > transform.position.y)
 		{
-			transform.position = new Vector3(transform.position.x, terrainHeight, transform.position.z); 
+			transform.position = new Vector3(transform.position.x, terrainHeight, transform.position.z);
 		}
 	}
 
 	void CheckRecenter()
 	{
-		if (Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone)
+		if (Mathf.Abs(Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs(Input.GetAxis("Vertical")) >= deadzone)
 		{
 			mainCam.m_RecenterToTargetHeading.m_enabled = false;
 		}
@@ -410,34 +424,51 @@ public class ControllerManager : MonoBehaviour {
 
 	void CheckFor2D()
 	{
-		if (Input.GetButtonDown("Fire1") && (Mathf.Abs (Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs (Input.GetAxis("Vertical")) < deadzone) && transform.position.y > 45)
+		if (Input.GetButtonDown("Fire1"))
 		{
 			if (is2D)
 			{
-				//gameManager.CheckTransitionTo3D();
+				print("Pressing the button");
+				gameManager.CheckTransition3D(network);
 			}
-			else
+			else if (transform.position.y > 45 && (Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone))
 			{
-
+				gameManager.CheckTransition2D(network);
 			}
 		}
 	}
 
 	public void Initialize2D()
 	{
+		//if (gameManager.axis = )
 		is2D = true;
 		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
 		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
 		/*
-		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
-		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
-		StartCoroutine(TransitionTo2D (final2DRotation));
-		*/
-		Vector3 rightNoY = new Vector3 (gameManager.axisRight.x, 0, gameManager.axisRight.z);
-		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
-		StartCoroutine(TransitionTo2D (final2DRotation));
+        Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
+        Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
+        StartCoroutine(TransitionTo2D (final2DRotation));
+        */
+		Vector3 rightNoY = gameManager.axisRight;
+		Quaternion final2DRotation = Quaternion.LookRotation(gameManager.axisRight, Vector2.up);
+		StartCoroutine(TransitionTo2D(final2DRotation));
 	}
 
+	public void Follow2D()
+	{
+		/*
+        Vector3 otherForward;
+        transform.forward = -otherForward;*/
+	}
+
+	//IEnumerator TransitionFollow2D()
+	//{
+
+	//    //while(counter < 1)
+	//    //{
+	//        yield return null;
+	//    //}
+	//}
 	IEnumerator TransitionTo2D(Quaternion final2DRotation)
 	{
 		immobilised = true;
@@ -446,29 +477,29 @@ public class ControllerManager : MonoBehaviour {
 		myFieldOfView = mainCam.m_Lens.FieldOfView;
 		float _initialFOV = mainCam.m_Lens.FieldOfView;
 
-//		Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
-//		Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
+		//        Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
+		//        Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
 		Quaternion initialRotation = transform.rotation;
 
 		float counter = 0;
 		while (counter < 1)
 		{
-			chromaticAberration.intensity = Mathf.Lerp (initialAberration, 0, counter);
+			chromaticAberration.intensity = Mathf.Lerp(initialAberration, 0, counter);
 			postProcess.chromaticAberration.settings = chromaticAberration;
 			myFieldOfView = Mathf.Lerp(_initialFOV, 60, counter);
 			Camera.main.fieldOfView = Mathf.Lerp(_initialFOV, 60, counter);
-//			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
-//			myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
-//			myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
+			//            myFieldOfView -= Time.deltaTime * fovSpeed * speed;
+			//            myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
+			//            myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
 			mainCam.m_Lens.FieldOfView = myFieldOfView;
 
-			transform.rotation = Quaternion.Slerp (initialRotation, final2DRotation, counter);
+			transform.rotation = Quaternion.Slerp(initialRotation, final2DRotation, counter);
 
 			counter += Time.deltaTime * 4;
-			counter = Mathf.Clamp (counter, 0, 1);
+			counter = Mathf.Clamp(counter, 0, 1);
 			yield return null;
 		}
-		gameManager.CreateFigure ();
+		//gameManager.CreateFigure ();
 		transform.rotation = final2DRotation;
 		immobilised = false;
 	}
@@ -476,7 +507,7 @@ public class ControllerManager : MonoBehaviour {
 	public void Initialize3D()
 	{
 		is2D = false;
-		StartCoroutine(TransitionTo3D ());
+		StartCoroutine(TransitionTo3D());
 	}
 
 	IEnumerator TransitionTo3D()
@@ -486,8 +517,8 @@ public class ControllerManager : MonoBehaviour {
 		float counter = 0;
 		while (counter < 1)
 		{
-			Camera.main.transform.position = Vector3.Lerp (initialPosition, mainCam.transform.position, counter);
-			Camera.main.transform.forward = Vector3.Lerp (initialDirection, transform.forward, counter);
+			Camera.main.transform.position = Vector3.Lerp(initialPosition, mainCam.transform.position, counter);
+			Camera.main.transform.forward = Vector3.Lerp(initialDirection, transform.forward, counter);
 			counter += Time.deltaTime * transitionSpeed3D;
 			yield return null;
 		}
@@ -496,10 +527,10 @@ public class ControllerManager : MonoBehaviour {
 
 	void CheckTurnBack2D()
 	{
-		Vector3 position2D = Camera.main.transform.InverseTransformPoint (transform.position);
-		if (Mathf.Abs (position2D.x) > 45 || Mathf.Abs (position2D.y) > 25)
+		Vector3 position2D = Camera.main.transform.InverseTransformPoint(transform.position);
+		if (Mathf.Abs(position2D.x) > 45 || Mathf.Abs(position2D.y) > 25)
 		{
-			StartCoroutine(TurnBack2D ());
+			StartCoroutine(TurnBack2D());
 		}
 	}
 
@@ -508,43 +539,46 @@ public class ControllerManager : MonoBehaviour {
 		immobilised = true;
 		Vector3 targetDirection = -transform.forward;
 		float counter = 0;
-		Vector3 position2D = Camera.main.transform.InverseTransformPoint (transform.position);
-		while (Vector3.Angle(transform.forward, targetDirection) > 5 && (Mathf.Abs (position2D.x) > 45 || Mathf.Abs (position2D.y) > 25))
+		Vector3 position2D = Camera.main.transform.InverseTransformPoint(transform.position);
+		while (Vector3.Angle(transform.forward, targetDirection) > 5 && (Mathf.Abs(position2D.x) > 45 || Mathf.Abs(position2D.y) > 25))
 		{
-			position2D = Camera.main.transform.InverseTransformPoint (transform.position);
-			Quaternion newRot = Quaternion.AngleAxis (turnSpeed2D, Camera.main.transform.InverseTransformDirection( Camera.main.transform.right));
+			position2D = Camera.main.transform.InverseTransformPoint(transform.position);
+			Quaternion newRot = Quaternion.AngleAxis(turnSpeed2D, Camera.main.transform.InverseTransformDirection(Camera.main.transform.right));
 			transform.rotation = transform.rotation * newRot;
-			counter += turnSpeed2D * Time.fixedDeltaTime;
-			yield return null;
+			counter += turnSpeed2D /** Time.fixedDeltaTime*/;
+			yield return new WaitForSeconds(Time.fixedDeltaTime);
 		}
 		immobilised = false;
 	}
 
 	void StartSinging()
 	{
-		song.SetActive (true);
-		if (!song.GetComponent<ParticleSystem> ().isEmitting) {
-			song.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmittingAndClear);
+		song.SetActive(true);
+		if (!song.GetComponent<ParticleSystem>().isEmitting)
+		{
+			song.GetComponent<ParticleSystem>().Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 		}
-		song.GetComponent<ParticleSystem> ().Play ();
+		song.GetComponent<ParticleSystem>().Play();
 		isSinging = true;
-		song.SetActive (true);
+		song.SetActive(true);
 	}
 
 	void StopSinging()
 	{
 		isSinging = false;
-		song.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmitting);
+		song.GetComponent<ParticleSystem>().Stop(true, ParticleSystemStopBehavior.StopEmitting);
 		wrongSingTimer = 0;
-		if (songIsWrong) {
-			ResetSong ();
+		if (songIsWrong)
+		{
+			ResetSong();
 		}
 	}
 
-	void ResetSong() {
-		song.SetActive (false);
+	void ResetSong()
+	{
+		song.SetActive(false);
 		songIsWrong = false;
-		gameManager.ResetSong ();
+		gameManager.ResetSong();
 	}
 
 }

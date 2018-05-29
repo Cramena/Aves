@@ -9,15 +9,13 @@ using UnityEngine.UI;
 public class LensesManager : MonoBehaviour
 {
     // Gamepad Variables
-    #region
-    [HideInInspector]
-    public x360_Gamepad gamepad;
-    private GamepadManager manager;
+	#region
+	[HideInInspector]
+	public x360_Gamepad gamepad;
+	private GamepadManager manager;
     #endregion
 
     public int playerIndex;
-    [Header("Owl or Crane?")]
-    public bool isCrane;
 
     [Header("Camera variables")]
     public CinemachineFreeLook cineCamera;
@@ -35,35 +33,28 @@ public class LensesManager : MonoBehaviour
     [Header("Shaders and Post Process")]
     public PostProcessingProfile noLenseProfile;
     public PostProcessingProfile bawProfile;
-    public PostProcessingProfile nightProfile;
 
     // Lense variables
     List<string> lensesList = new List<string>() { "noLense" };
     private string currentLens;
     private int lensCounter;
 
-    [Header("Skyboxes")]
-    public Material daySkybox;
-    public Material nightSkybox;
-
-    // Will be found during the event start function
-    [HideInInspector]
-    public LightManager lightManager;
+    [Header("Lense variables")]
+    [Tooltip("Toggle if the player has the black and white lense")]
+    public bool hasBawLense;
+    [Tooltip("Toggle if the player has the night lense")]
+    public bool hasNightLense;
 
     // Transition variables
     Animator blackImageAnimator;
     private bool noLensTransition;
     private float noLensTransitionTimer;
 
-    Animator whiteImageAnimator;
-    private bool nightTransition;
-    private float nightTransitionTimer;
-
-    void Start()
-    {
+    void Start ()
+	{
         // Getting the gamepad
-        manager = GamepadManager.Instance;
-        gamepad = manager.GetGamepad(playerIndex);
+		manager = GamepadManager.Instance;
+		gamepad=manager.GetGamepad(playerIndex);
 
         // Getting the shader scripts from the camera
         bawShader = Camera.main.GetComponent<ReplacementShaderEffect>();
@@ -80,32 +71,14 @@ public class LensesManager : MonoBehaviour
             }
         }
 
-        // Finding the white image animator inside the scene
-        foreach (Animator anim in _allAnimator)
-        {
-            if (anim.gameObject.name == "WhiteImage")
-            {
-                whiteImageAnimator = anim;
-            }
-        }
-
-        lightManager = Camera.main.GetComponent<LightManager>();
-
-        // Setting the light rendering settings in the camera
-        if (isCrane == true)
-        {
-            lightManager.hasCraneLights = true;
-        }
-
         // Adding the appropriate lense to the list if toggled in the inspector
-        if (isCrane == false)
+        if (hasBawLense == true)
         {
             lensesList.Add("bawLense");
         }
 
-        if (isCrane == true)
+        if (hasBawLense == true)
         {
-            // later on : the nightLense should be added to the lenseList if the crane bird takes it
             lensesList.Add("nightLense");
         }
 
@@ -114,15 +87,8 @@ public class LensesManager : MonoBehaviour
         currentLens = lensesList[lensCounter];
     }
 
-    void Update()
-    {
-        // For the start: enabling day light and disabling night light for the crane bird
-        if (lightManager.startingInDayLight == true)
-        {
-            lightManager.EnableNightLights();
-            lightManager.startingInDayLight = false;
-        }
-
+	void Update ()
+	{
         // Pressing LB or RB switches the lens on the list and triggers the LensSwitcher function
         if (gamepad.GetButtonDown("LB"))
         {
@@ -156,7 +122,6 @@ public class LensesManager : MonoBehaviour
             LensSwitcher(currentLens);
         }
 
-        // Special transition made when coming back to normal
         if (noLensTransition == true)
         {
             noLensTransitionTimer += Time.deltaTime;
@@ -166,56 +131,37 @@ public class LensesManager : MonoBehaviour
                 postProcess.profile = noLenseProfile;
 
                 cineCamera.m_Lens.FarClipPlane = noLenseDepthOfView;
-                Camera.main.GetComponent<Skybox>().material = daySkybox;
                 Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
 
                 noLensTransition = false;
                 noLensTransitionTimer = 0;
-
-                // Enables Day Light and disables Night Light in case the player is a crane and comes back from the night lense
-                if (isCrane == true)
-                {
-                    lightManager.DisableNightLights();
-                }
-            }
-        }
-
-        // White transition for the night, maybe I can find a better idea...
-        if (nightTransition == true)
-        {
-            nightTransitionTimer += Time.deltaTime;
-            if (nightTransitionTimer >= 0.2)
-            {
-                bawShader.enabled = false;
-                postProcess.profile = nightProfile;
-                cineCamera.m_Lens.FarClipPlane = noLenseDepthOfView;
-
-                Camera.main.GetComponent<Skybox>().material = nightSkybox;
-                Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
-
-                lightManager.EnableNightLights();
-
-                nightTransition = false;
-                nightTransitionTimer = 0;
-
-                lightManager.EnableNightLights();
             }
         }
     }
-
 
     void LensSwitcher(string whichLense)
     {
         if (whichLense == "noLense")
         {
+            Debug.Log(whichLense);
+
             blackImageAnimator.SetTrigger("Transition");
-            // Triggers the transition in the update
             noLensTransition = true;
+
+            /*
+            bawShader.enabled = false;
+            postProcess.profile = noLenseProfile;
+
+            cineCamera.m_Lens.FarClipPlane = noLenseDepthOfView;
+            Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
+            */
         }
 
         // Black and white lens
         if (whichLense == "bawLense")
         {
+            Debug.Log(whichLense);
+
             // Transition : flash
             glowFlash.enabled = true;
             glowFlash.Activated();
@@ -227,27 +173,16 @@ public class LensesManager : MonoBehaviour
             // Attributing a very low depth of view to the camera
             cineCamera.m_Lens.FarClipPlane = bawDepthOfView;
             Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
-
-            lightManager.DisableNightLights();
         }
 
         if (whichLense == "nightLense")
         {
-            whiteImageAnimator.SetTrigger("Transition");
-            nightTransition = true;
+            Debug.Log(whichLense);
 
-            /*
-             * Currently, I'm using the white transition but I keep those in case I find something better
-             * 
             bawShader.enabled = false;
-            postProcess.profile = nightProfile;
+            // Will be changed to its own profile once created
+            postProcess.profile = noLenseProfile;
             cineCamera.m_Lens.FarClipPlane = noLenseDepthOfView;
-
-            Camera.main.GetComponent<Skybox>().material = nightSkybox;
-            Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
-
-            lightManager.EnableNightLights();
-            */
         }
     }
 }
