@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class GameManager : NetworkBehaviour
+public class GameManager : MonoBehaviour
 {
 
 	public static Dictionary<string, SetUpNetwork> players = new Dictionary<string, SetUpNetwork>();
@@ -36,8 +36,10 @@ public class GameManager : NetworkBehaviour
 		print(players.Count);
 	}
 
- 	public void CheckTransition2D(SetUpNetwork _player)
+	//[Command]
+	public void CmdCheckTransition2D(string _playerKey)
 	{
+		SetUpNetwork _player = players[_playerKey];
 		if (players.Count == 1)
 		{
 			_player.Initialize2D();
@@ -64,10 +66,13 @@ public class GameManager : NetworkBehaviour
 				}
 			}
 		}
+		CreateFigure(_player.controller);
 	}
-
-	public void CheckTransition3D(SetUpNetwork _player)
+	
+	//[Command]
+	public void CmdCheckTransition3D(string _playerKey)
 	{
+		SetUpNetwork _player = players[_playerKey];
 		playersReady.Clear();
 		foreach (string key in players.Keys)
 		{
@@ -149,11 +154,11 @@ public class GameManager : NetworkBehaviour
 	//    axisBack = Vector3.zero;
 	//}
 
-	//public void CreateFigure()
-	//{
-	//    Vector3 figurePostion = players[0].transform.position;//Camera.main.transform.position + (Camera.main.transform.forward * Camera.main.GetComponent<CameraController> ().distance2D);
-	//    currentFigure = Instantiate (figure, figurePostion, /*Quaternion.LookRotation(players[0].transform.forward)*/players[0].transform.rotation).GetComponent<FigureController>();
-	//}
+	public void CreateFigure(ControllerManager _player)
+	{
+		Vector3 figurePostion = _player.transform.position;//players[0].transform.position;//Camera.main.transform.position + (Camera.main.transform.forward * Camera.main.GetComponent<CameraController> ().distance2D);
+		currentFigure = Instantiate(figure, figurePostion, /*Quaternion.LookRotation(players[0].transform.forward)*//*players[0].transform.rotation*/_player.transform.rotation).GetComponent<FigureController>();
+	}
 
 	public void ResetSong()
 	{

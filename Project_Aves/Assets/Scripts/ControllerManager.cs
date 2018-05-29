@@ -15,6 +15,7 @@ public class ControllerManager : NetworkBehaviour
 
 	public SetUpNetwork player;
 	public CinemachineFreeLook mainCam;
+	public CinemachineVirtualCamera secondCam;
 	public PostProcessingProfile postProcess;
 	public Transform lookAt;
 	public GameObject song;
@@ -136,7 +137,7 @@ public class ControllerManager : NetworkBehaviour
 	void InitializeVariables()
 	{
 		myFieldOfView = minimumFov;
-		mainCam.m_Lens.FieldOfView = myFieldOfView;
+		secondCam.m_Lens.FieldOfView = myFieldOfView;
 	}
 
 	void Update()
@@ -262,7 +263,7 @@ public class ControllerManager : NetworkBehaviour
 			Quaternion rotation = Quaternion.LookRotation(xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if ((Mathf.Abs(transform.forward.y) > 0.1f || Mathf.Sign(transform.up.y) < 0) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone)
+		if ((Mathf.Abs(transform.forward.y) > 0.1f || Mathf.Sign(transform.up.y) < 0 || Mathf.Abs(transform.right.y) >= 0.1f) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone)
 		{
 			CheckResetZAngle();
 		}
@@ -365,7 +366,7 @@ public class ControllerManager : NetworkBehaviour
 
 	void UpdateFOV()
 	{
-		myFieldOfView = mainCam.m_Lens.FieldOfView;
+		myFieldOfView = secondCam.m_Lens.FieldOfView;
 		if (transform.forward.y > 0.5f)
 		{
 			currentMinimumFov = minimumUpFov;
@@ -383,7 +384,7 @@ public class ControllerManager : NetworkBehaviour
 			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
 		}
 		myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
-		mainCam.m_Lens.FieldOfView = myFieldOfView;
+		secondCam.m_Lens.FieldOfView = myFieldOfView;
 	}
 
 	void UpdateChromaticAberration()
@@ -429,11 +430,11 @@ public class ControllerManager : NetworkBehaviour
 			if (is2D)
 			{
 				print("Pressing the button");
-				gameManager.CheckTransition3D(network);
+				gameManager.CmdCheckTransition3D("Player " + GetComponent<NetworkIdentity>().netId.ToString());
 			}
 			else if (transform.position.y > 45 && (Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone))
 			{
-				gameManager.CheckTransition2D(network);
+				gameManager.CmdCheckTransition2D("Player " + GetComponent<NetworkIdentity>().netId.ToString());
 			}
 		}
 	}
@@ -442,7 +443,7 @@ public class ControllerManager : NetworkBehaviour
 	{
 		//if (gameManager.axis = )
 		is2D = true;
-		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, mainCam);
+		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, secondCam);
 		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
 		/*
         Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
@@ -474,8 +475,8 @@ public class ControllerManager : NetworkBehaviour
 		immobilised = true;
 		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
 		float initialAberration = chromaticAberration.intensity;
-		myFieldOfView = mainCam.m_Lens.FieldOfView;
-		float _initialFOV = mainCam.m_Lens.FieldOfView;
+		myFieldOfView = secondCam.m_Lens.FieldOfView;
+		float _initialFOV = secondCam.m_Lens.FieldOfView;
 
 		//        Vector3 rightNoY = new Vector3 (transform.right.x, 0, transform.right.z);
 		//        Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
@@ -491,7 +492,7 @@ public class ControllerManager : NetworkBehaviour
 			//            myFieldOfView -= Time.deltaTime * fovSpeed * speed;
 			//            myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
 			//            myFieldOfView = Mathf.Lerp(initialFOV, minimumFov, counter);
-			mainCam.m_Lens.FieldOfView = myFieldOfView;
+			secondCam.m_Lens.FieldOfView = myFieldOfView;
 
 			transform.rotation = Quaternion.Slerp(initialRotation, final2DRotation, counter);
 
@@ -517,7 +518,7 @@ public class ControllerManager : NetworkBehaviour
 		float counter = 0;
 		while (counter < 1)
 		{
-			Camera.main.transform.position = Vector3.Lerp(initialPosition, mainCam.transform.position, counter);
+			Camera.main.transform.position = Vector3.Lerp(initialPosition, secondCam.transform.position, counter);
 			Camera.main.transform.forward = Vector3.Lerp(initialDirection, transform.forward, counter);
 			counter += Time.deltaTime * transitionSpeed3D;
 			yield return null;
@@ -579,6 +580,14 @@ public class ControllerManager : NetworkBehaviour
 		song.SetActive(false);
 		songIsWrong = false;
 		gameManager.ResetSong();
+	}
+
+	private void OnCollisionEnter(Collision other)
+	{
+		if (other.gameObject.tag == "Obstacle")
+		{
+			rigidbody.AddForce(other.contacts[0].normal * 100, ForceMode.Impulse);
+		}
 	}
 
 }

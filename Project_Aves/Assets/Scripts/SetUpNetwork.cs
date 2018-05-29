@@ -24,11 +24,6 @@ public class SetUpNetwork : NetworkBehaviour
 		}
 	}
 
-	public void Ready()
-	{
-
-	}
-
 	public void Initialize2D()
 	{
 		controller.Initialize2D();

@@ -52,7 +52,7 @@ public class CameraController : MonoBehaviour
 		}
 	}
 
-	public void TransitionCamera2D(Vector3 _playerDirection, Vector3 _playerPosition, CinemachineFreeLook _cinemachine)
+	public void TransitionCamera2D(Vector3 _playerDirection, Vector3 _playerPosition, CinemachineVirtualCamera _cinemachine)
 	{
 		transform.position = _cinemachine.transform.position;
 		transform.rotation = Quaternion.LookRotation(_playerPosition - _cinemachine.transform.position);
