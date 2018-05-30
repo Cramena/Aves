@@ -1114,7 +1114,7 @@ MonoBehaviour:
   minimumSpeedTurning: 10
   maximumSpeedTurning: 30
   turningSlowingAmount: 3
-  fovSpeed: 0.5
+  fovSpeed: 0.065
   minimumUpFov: 20
   minimumFov: 40
   maximumFov: 55

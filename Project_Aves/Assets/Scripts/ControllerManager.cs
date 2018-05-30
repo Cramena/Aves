@@ -367,13 +367,15 @@ public class ControllerManager : NetworkBehaviour
 	void UpdateFOV()
 	{
 		myFieldOfView = secondCam.m_Lens.FieldOfView;
-		if (transform.forward.y > 0.8f)
+		/*if (transform.forward.y > 0.8f)
 		{
-			currentMinimumFov = minimumUpFov;
+			currentMinimumFov = Mathf.Lerp(currentMinimumFov, minimumUpFov, Time.deltaTime * speed);
+			//currentMinimumFov = minimumUpFov;
 		}
-		else //if (myFieldOfView >= 40)
+		else if (currentMinimumFov < minimumFov)//if (myFieldOfView >= 40)
 		{
-			currentMinimumFov = minimumFov;
+			currentMinimumFov = Mathf.Lerp(currentMinimumFov, minimumFov, Time.deltaTime * speed);
+			//currentMinimumFov = minimumFov;
 		}
 		if (accelerationModifiyer == 1)
 		{
@@ -384,8 +386,22 @@ public class ControllerManager : NetworkBehaviour
 		{
 			//myFieldOfView = Mathf.Lerp(myFieldOfView, currentMinimumFov, speed * Time.deltaTime);
 			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
+		}*/
+		float targetFOV;
+		if (transform.forward.y > 0.8f)
+		{
+			targetFOV = minimumUpFov;
 		}
-		myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
+		else if (accelerationModifiyer == 1)
+		{
+			targetFOV = maximumFov;
+		}
+		else
+		{
+			targetFOV = minimumFov;
+		}
+		//myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);
+		myFieldOfView = Mathf.Lerp(myFieldOfView, targetFOV, speed * Time.deltaTime * fovSpeed);
 		secondCam.m_Lens.FieldOfView = myFieldOfView;
 	}
 
@@ -584,11 +600,11 @@ public class ControllerManager : NetworkBehaviour
 		gameManager.ResetSong();
 	}
 
-	private void OnCollisionEnter(Collision other)
+	private void OnTriggerEnter (Collider other)
 	{
 		if (other.gameObject.tag == "Obstacle")
 		{
-			rigidbody.AddForce(other.contacts[0].normal * 100, ForceMode.Impulse);
+			rigidbody.AddForce((transform.position - other.transform.position) * 1, ForceMode.Impulse);
 		}
 	}
 
