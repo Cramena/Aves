@@ -367,20 +367,22 @@ public class ControllerManager : NetworkBehaviour
 	void UpdateFOV()
 	{
 		myFieldOfView = secondCam.m_Lens.FieldOfView;
-		if (transform.forward.y > 0.5f)
+		if (transform.forward.y > 0.8f)
 		{
 			currentMinimumFov = minimumUpFov;
 		}
-		else if (myFieldOfView >= 40)
+		else //if (myFieldOfView >= 40)
 		{
 			currentMinimumFov = minimumFov;
 		}
 		if (accelerationModifiyer == 1)
 		{
+			//myFieldOfView = Mathf.Lerp(myFieldOfView, maximumFov, speed * Time.deltaTime);
 			myFieldOfView += Time.deltaTime * fovSpeed * speed;
 		}
 		else
 		{
+			//myFieldOfView = Mathf.Lerp(myFieldOfView, currentMinimumFov, speed * Time.deltaTime);
 			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
 		}
 		myFieldOfView = Mathf.Clamp(myFieldOfView, currentMinimumFov, maximumFov);

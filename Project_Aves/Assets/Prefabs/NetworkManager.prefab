@@ -53,6 +53,8 @@ GameObject:
   - component: {fileID: 4074637095382662}
   - component: {fileID: 114222537248833862}
   - component: {fileID: 114575126277458306}
+  - component: {fileID: 114919216812224498}
+  - component: {fileID: 114558982399113298}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -194,6 +196,38 @@ MonoBehaviour:
   m_Script: {fileID: -1050975500, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114558982399113298
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1673574473081042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 188
+    i1: 39
+    i2: 83
+    i3: 8
+    i4: 208
+    i5: 182
+    i6: 142
+    i7: 244
+    i8: 203
+    i9: 71
+    i10: 139
+    i11: 179
+    i12: 125
+    i13: 197
+    i14: 10
+    i15: 212
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!114 &114575126277458306
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -209,6 +243,23 @@ MonoBehaviour:
   showGUI: 1
   offsetX: 0
   offsetY: 100
+--- !u!114 &114919216812224498
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1673574473081042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b29230cb4966ee44dbb38fc169d34122, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  figure: {fileID: 1994920004161078, guid: 4c8ce4b65fe6cab4b977040f94b3f624, type: 2}
+  currentFigure: {fileID: 0}
+  axis: {x: 0, y: 0, z: 0}
+  axisRight: {x: 0, y: 0, z: 0}
+  axisLeft: {x: 0, y: 0, z: 0}
+  axisBack: {x: 0, y: 0, z: 0}
 --- !u!114 &114949557384123934
 MonoBehaviour:
   m_ObjectHideFlags: 1

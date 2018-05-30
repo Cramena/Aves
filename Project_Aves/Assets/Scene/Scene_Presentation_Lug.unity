@@ -14146,18 +14146,20 @@ Prefab:
       propertyPath: m_RootOrder
       value: 20
       objectReference: {fileID: 0}
-    - target: {fileID: 114211632828057268, guid: 2330f5f599c036a4996ad25dc9f5eeda,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_LocalPlayerAuthority
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114211632828057268, guid: 2330f5f599c036a4996ad25dc9f5eeda,
-        type: 2}
+    - target: {fileID: 0}
       propertyPath: m_ServerOnly
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1395459727024986, guid: 2330f5f599c036a4996ad25dc9f5eeda, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 114211632828057268, guid: 2330f5f599c036a4996ad25dc9f5eeda, type: 2}
+    - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: 2330f5f599c036a4996ad25dc9f5eeda, type: 2}
   m_IsPrefabParent: 0
 --- !u!1001 &791828349
@@ -16082,7 +16084,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 12
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114919216812224498, guid: bc275308d0b68ef4cb478bb37dc50ad4, type: 2}
+    - {fileID: 114558982399113298, guid: bc275308d0b68ef4cb478bb37dc50ad4, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: bc275308d0b68ef4cb478bb37dc50ad4, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &971404814 stripped

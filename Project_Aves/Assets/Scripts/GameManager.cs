@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
 		}
 		CreateFigure(_player.controller);
 	}
-	
+
 	//[Command]
 	public void CmdCheckTransition3D(string _playerKey)
 	{
