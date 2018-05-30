@@ -1125,7 +1125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6761e41b278b89429ae385db8746cdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  network: {fileID: 0}
+  player: {fileID: 0}
   mainCam: {fileID: 114006680978830640}
+  secondCam: {fileID: 114021658555492276}
   postProcess: {fileID: 11400000, guid: f699f0f3fb5acd541ac96bb3f1d18164, type: 2}
   lookAt: {fileID: 0}
   song: {fileID: 1903421239171996}
@@ -1199,6 +1202,9 @@ MonoBehaviour:
   - {fileID: 114317122130479132}
   - {fileID: 114051894840881368}
   - {fileID: 114006680978830640}
+  gameManager: {fileID: 0}
+  controller: {fileID: 0}
+  ID: 
 --- !u!114 &114317122130479132
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1211,7 +1217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIndex: 1
-  isCrane: 1
+  isCrane: 0
   cineCamera: {fileID: 114006680978830640}
   noLenseDepthOfView: 300
   bawDepthOfView: 1500

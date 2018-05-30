@@ -123,8 +123,7 @@ public class ControllerManager : NetworkBehaviour
 	public float wrongSingTimer;
 	public bool songIsWrong;
 
-
-	void Start()
+    void Start()
 	{
 		//gameManager.AddPlayer (this);
 		manager = GamepadManager.Instance;
@@ -132,7 +131,8 @@ public class ControllerManager : NetworkBehaviour
 		rigidbody = GetComponent<Rigidbody>();
 		song.SetActive(false);
 		InitializeVariables();
-	}
+        Camera.main.GetComponent<LightManager>().CraneOrOwlLight();
+    }
 
 	void InitializeVariables()
 	{

@@ -42,7 +42,7 @@ public class LightManager : MonoBehaviour
         craneNightLightComp = craneNightLight.GetComponent<Light>();
     }
 
-    void OnPreRender()
+    public void CraneOrOwlLight()
     {
         if (hasCraneLights == true)
         {
