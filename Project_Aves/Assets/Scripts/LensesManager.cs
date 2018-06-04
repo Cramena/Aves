@@ -214,20 +214,20 @@ public class LensesManager : MonoBehaviour
             nightTransitionTimer += Time.deltaTime;
             if (nightTransitionTimer >= 0.2)
             {
-                bawShader.enabled = false;
-                postProcess.profile = nightProfile;
-                cineCamera.m_Lens.FarClipPlane = noLenseDepthOfView;
+				bawShader.enabled = false;
+				postProcess.profile = nightProfile;
+				cineCamera.m_Lens.FarClipPlane = noLenseDepthOfView;
 
-                Camera.main.GetComponent<Skybox>().material = nightSkybox;
+				Camera.main.GetComponent<Skybox>().material = nightSkybox;
 				Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
 
 				lightManager.EnableNightLights();
 
-                nightTransition = false;
+				nightTransition = false;
                 nightTransitionTimer = 0;
 
-                lightManager.EnableNightLights();
-            }
+				lightManager.EnableNightLights();
+			}
         }
     }
 

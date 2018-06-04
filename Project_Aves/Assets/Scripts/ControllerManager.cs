@@ -21,7 +21,7 @@ public class ControllerManager : NetworkBehaviour
 	public TrailRenderer trail;
 	public AudioSource source;
 	public AudioSource songSource;
-
+	public Animator animator;
 
 	public AudioClip hit;
 	public AudioClip flap;
@@ -347,7 +347,7 @@ public class ControllerManager : NetworkBehaviour
 			Quaternion rotation = Quaternion.LookRotation(xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if ((transform.forward.y > 0.1f || Mathf.Sign(transform.up.y) < 0 || Mathf.Abs(transform.right.y) >= 0.1f) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone)
+		if ((transform.forward.y > 0.1f || Mathf.Sign(transform.up.y) < 0 || Mathf.Abs(transform.right.y) >= 0.1f) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone && speedModifiyer != 5f)
 		{
 			CheckResetZAngle();
 		}
@@ -434,6 +434,7 @@ public class ControllerManager : NetworkBehaviour
 			if (speedModifiyer != -5f)
 			{
 				source.PlayOneShot(slow);
+				animator.SetBool("KebabBool", false);
 			}
 			speedModifiyer = -5f;
 		}
@@ -442,11 +443,16 @@ public class ControllerManager : NetworkBehaviour
 			if (speedModifiyer != 5f)
 			{
 				source.PlayOneShot(boost);
+				animator.SetBool("KebabBool", true);
 			}
 			speedModifiyer = 5f;
 		}
 		else
 		{
+			if (speedModifiyer != 0)
+			{
+				animator.SetBool("KebabBool", false);
+			}
 			speedModifiyer = 0;
 		}
 	}
@@ -480,7 +486,7 @@ public class ControllerManager : NetworkBehaviour
 			myFieldOfView -= Time.deltaTime * fovSpeed * speed;
 		}*/
 		float targetFOV;
-		if (transform.forward.y > 0.8f)
+		if (transform.forward.y > 0.8f && speedModifiyer != 5f)
 		{
 			targetFOV = minimumUpFov;
 		}
