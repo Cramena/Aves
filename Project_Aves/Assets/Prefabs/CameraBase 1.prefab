@@ -58,7 +58,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1934336372799898}
   m_LocalRotation: {x: -0, y: 0.8804149, z: -0, w: 0.47420415}
-  m_LocalPosition: {x: 106.11907, y: 9.041, z: 129.4886}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4531214542474218}
@@ -151,6 +151,9 @@ MonoBehaviour:
   DownRes: 2
   Size: 2.28
   Intensity: 0
+  initialIntensity: 3
+  finalIntensity: 0
+  flashSpeed: 0
 --- !u!114 &114392297591716018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -248,11 +251,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db11bc155fcd7b24fad3ab67b73f6839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetPos: {fileID: 0}
-  PosLerpSpeed: 0
-  TargetToLook: {fileID: 0}
-  RotLerpSpeed: 0
-  speedRot: 5
+  gameManager: {fileID: 0}
+  secondCam: {fileID: 0}
+  distance2D: 50
+  transitionSpeed: 4
+  direction2D: {x: 0, y: 0, z: 0}
 --- !u!124 &124686222336610624
 Behaviour:
   m_ObjectHideFlags: 1

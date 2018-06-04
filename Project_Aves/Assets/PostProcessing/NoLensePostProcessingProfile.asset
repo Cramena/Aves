@@ -100,7 +100,7 @@ MonoBehaviour:
     m_Enabled: 1
     m_Settings:
       bloom:
-        intensity: 0.16
+        intensity: 1.36
         threshold: 1.1
         softKnee: 0.5
         radius: 2.5
@@ -308,7 +308,7 @@ MonoBehaviour:
     m_Enabled: 1
     m_Settings:
       spectralTexture: {fileID: 0}
-      intensity: 0.46468136
+      intensity: 0.1
   grain:
     m_Enabled: 0
     m_Settings:

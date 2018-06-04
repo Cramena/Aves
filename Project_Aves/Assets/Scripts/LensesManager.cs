@@ -13,9 +13,14 @@ public class LensesManager : MonoBehaviour
     [HideInInspector]
     public x360_Gamepad gamepad;
     private GamepadManager manager;
-    #endregion
+	#endregion
+	public AudioSource source;
 
-    public int playerIndex;
+	public AudioClip noLense;
+	public AudioClip bawLense;
+	public AudioClip nightLense;
+
+	public int playerIndex;
     [Header("Owl or Crane?")]
     public bool isCrane;
 
@@ -59,7 +64,10 @@ public class LensesManager : MonoBehaviour
     private bool nightTransition;
     private float nightTransitionTimer;
 
-    void Start()
+	bool otherLenseActivated;
+
+
+	void Start()
     {
         // Getting the gamepad
         manager = GamepadManager.Instance;
@@ -100,10 +108,13 @@ public class LensesManager : MonoBehaviour
         // Adding the appropriate lense to the list if toggled in the inspector
         if (isCrane == false)
         {
-            lensesList.Add("bawLense");
-        }
+			lightManager.hasCraneLights = false;
+			lensesList.Add("bawLense");
+		}
 
-        if (isCrane == true)
+		Camera.main.GetComponent<LightManager>().CraneOrOwlLight();
+
+		if (isCrane == true)
         {
             // later on : the nightLense should be added to the lenseList if the crane bird takes it
             lensesList.Add("nightLense");
@@ -116,8 +127,25 @@ public class LensesManager : MonoBehaviour
 
     void Update()
     {
-        // For the start: enabling day light and disabling night light for the crane bird
-        if (lightManager.startingInDayLight == true)
+		if (Input.GetKeyDown(KeyCode.RightControl))
+		{
+			if (otherLenseActivated)
+			{
+				lightManager.hasCraneLights = false;
+				lightManager.CraneOrOwlLight();
+				LensSwitcher("noLense");
+				otherLenseActivated = false;
+			}
+			else
+			{
+				lightManager.hasCraneLights = true;
+				lightManager.CraneOrOwlLight();
+				LensSwitcher("nightLense");
+				otherLenseActivated = true;
+			}
+		}
+		// For the start: enabling day light and disabling night light for the crane bird
+		if (lightManager.startingInDayLight == true)
         {
             lightManager.EnableNightLights();
             lightManager.startingInDayLight = false;
@@ -191,9 +219,9 @@ public class LensesManager : MonoBehaviour
                 cineCamera.m_Lens.FarClipPlane = noLenseDepthOfView;
 
                 Camera.main.GetComponent<Skybox>().material = nightSkybox;
-                Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
+				Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
 
-                lightManager.EnableNightLights();
+				lightManager.EnableNightLights();
 
                 nightTransition = false;
                 nightTransitionTimer = 0;
@@ -204,10 +232,11 @@ public class LensesManager : MonoBehaviour
     }
 
 
-    void LensSwitcher(string whichLense)
+    public void LensSwitcher(string whichLense)
     {
         if (whichLense == "noLense")
         {
+			source.PlayOneShot(noLense);
             blackImageAnimator.SetTrigger("Transition");
             // Triggers the transition in the update
             noLensTransition = true;
@@ -216,8 +245,9 @@ public class LensesManager : MonoBehaviour
         // Black and white lens
         if (whichLense == "bawLense")
         {
-            // Transition : flash
-            glowFlash.enabled = true;
+			source.PlayOneShot(bawLense);
+			// Transition : flash
+			glowFlash.enabled = true;
             glowFlash.Activated();
 
             // Shader component on camera and black and white post process profile activated
@@ -226,14 +256,15 @@ public class LensesManager : MonoBehaviour
 
             // Attributing a very low depth of view to the camera
             cineCamera.m_Lens.FarClipPlane = bawDepthOfView;
-            Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
+			Camera.main.GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
 
-            lightManager.DisableNightLights();
+			lightManager.DisableNightLights();
         }
 
         if (whichLense == "nightLense")
         {
-            whiteImageAnimator.SetTrigger("Transition");
+			source.PlayOneShot(nightLense);
+			whiteImageAnimator.SetTrigger("Transition");
             nightTransition = true;
 
             /*

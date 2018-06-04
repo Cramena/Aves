@@ -46,14 +46,16 @@ public class LightManager : MonoBehaviour
     {
         if (hasCraneLights == true)
         {
-            craneNightLightComp.enabled = true;
+			print("Is a crane");
+			craneNightLightComp.enabled = true;
             craneDayLightComp.enabled = true;
             owlDayLightComp.enabled = false;
         }
 
         else if (hasCraneLights == false)
         {
-            craneNightLightComp.enabled = false;
+			print("Is an owl");
+			craneNightLightComp.enabled = false;
             craneDayLightComp.enabled = false;
             owlDayLightComp.enabled = true;
             startingInDayLight = true;

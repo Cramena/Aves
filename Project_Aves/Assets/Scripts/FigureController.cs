@@ -5,12 +5,15 @@ using UnityEngine;
 public class FigureController : MonoBehaviour {
 
 	bool completed;
+	public GameObject figureImage;
 	public FigureElementController[] blueElements;
 	public FigureElementController[] redElements;
 	public GameManager manager;
 
 	void Start() {
 		InitializeTargetColors ();
+		//figureImage = GameObject.Find("Figure");
+		//figureImage.SetActive(true);
 	}
 
 	public void ElementCompleted()
@@ -33,6 +36,7 @@ public class FigureController : MonoBehaviour {
 		}
 		if (redComplete && blueComplete)
 		{
+			//figureImage.SetActive(false);
 			manager.FigureComplete (gameObject);
 		}
 	}

@@ -8,6 +8,12 @@ public class CameraController : MonoBehaviour
 	public GameManager gameManager;
 	public GameManager secondCam;
 
+	public AudioSource musicSource;
+
+	public AudioClip calmAmbience;
+	public AudioClip stormAmbience;
+
+
 	public float distance2D = 50;
 	public float transitionSpeed = 4;
 
@@ -23,6 +29,7 @@ public class CameraController : MonoBehaviour
 	void Start()
 	{
 		gameManager = GameObject.Find("GameManager1").GetComponent<GameManager>();
+		musicSource.PlayOneShot(stormAmbience);
 	}
 
 	void FixedUpdate()
@@ -60,11 +67,12 @@ public class CameraController : MonoBehaviour
 		transitionTimer = 0;
 		direction2D = /*endPosition - _playerPosition;*//*-gameManager.axis;*/new Vector3(-_playerDirection.x, 0, -_playerDirection.z);
 		playerStartPosition = _playerPosition;
-		playerStartDirection = _playerDirection;
+		playerStartDirection = new Vector3(_playerDirection.x, 0, _playerDirection.z);
 		initialPosition = transform.position;
 		initialDirection = transform.forward;
 		//endPosition = playerStartPosition + (gameManager.axis * distance2D);
-		endPosition = playerStartPosition + (playerStartDirection * distance2D);
+
+		endPosition = playerStartPosition + (playerStartDirection.normalized * distance2D);
 		//        print(Vector3.Distance(GameObject.Find("Player").transform.position, endPosition));
 		print("Axis : " + gameManager.axis);
 	}

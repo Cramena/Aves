@@ -2,14 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+	public AudioSource source;
+
+	public AudioClip figureStart;
+	public AudioClip figureCancel;
+	public AudioClip figureComplete;
 
 	public static Dictionary<string, SetUpNetwork> players = new Dictionary<string, SetUpNetwork>();
 	public static Dictionary<string, SetUpNetwork> playersReady = new Dictionary<string, SetUpNetwork>();
 
 	public GameObject figure;
+	public Image figureImage;
+	public Sprite figureSprite;
+	public Sprite emptySprite;
 	public FigureController currentFigure;
 	ControllerManager readyPlayer;
 	public Vector3 axis;
@@ -19,13 +28,7 @@ public class GameManager : MonoBehaviour
 
 	void Start()
 	{
-		/*
-        if (players.Count > 0)
-        {
-            players.RemoveAt(0);
-            players.Clear();
-        }
-        */
+		figureImage.enabled = false;
 		Camera.main.GetComponent<CameraController>().gameManager = this;
 		print(players.Count);
 	}
@@ -67,6 +70,9 @@ public class GameManager : MonoBehaviour
 			}
 		}
 		CreateFigure(_player.controller);
+		figureImage = GameObject.Find("Figure 1").GetComponent<Image>();
+		figureImage.enabled = true;
+		source.PlayOneShot(figureStart);
 	}
 
 	//[Command]
@@ -78,6 +84,8 @@ public class GameManager : MonoBehaviour
 		{
 			players[key].Initialize3D();
 		}
+		figureImage.enabled = false;
+		source.PlayOneShot(figureCancel);
 	}
 
 	//public void AddPlayer(ControllerManager player)
@@ -157,7 +165,8 @@ public class GameManager : MonoBehaviour
 	public void CreateFigure(ControllerManager _player)
 	{
 		Vector3 figurePostion = _player.transform.position;//players[0].transform.position;//Camera.main.transform.position + (Camera.main.transform.forward * Camera.main.GetComponent<CameraController> ().distance2D);
-		currentFigure = Instantiate(figure, figurePostion, /*Quaternion.LookRotation(players[0].transform.forward)*//*players[0].transform.rotation*/_player.transform.rotation).GetComponent<FigureController>();
+		Quaternion _figureRotation = Quaternion.LookRotation(new Vector3(_player.transform.forward.x, 0, _player.transform.forward.z));
+		currentFigure = Instantiate(figure, figurePostion, /*Quaternion.LookRotation(players[0].transform.forward)*//*players[0].transform.rotation*//*_player.transform.rotation*/_figureRotation).GetComponent<FigureController>();
 	}
 
 	public void ResetSong()
@@ -167,6 +176,14 @@ public class GameManager : MonoBehaviour
 
 	public void FigureComplete(GameObject figure)
 	{
+		figureImage = GameObject.Find("Figure 1").GetComponent<Image>();
+		figureImage.enabled = false;
 		Destroy(figure);
+		foreach (string key in players.Keys)
+		{
+			players[key].Initialize3D();
+		}
+		source.PlayOneShot(figureComplete);
+		print("Figure terminée");
 	}
 }

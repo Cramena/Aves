@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Cinemachine;
 
 public class SetUpNetwork : NetworkBehaviour
 {
@@ -9,6 +10,7 @@ public class SetUpNetwork : NetworkBehaviour
 	public Behaviour[] componentsToDisable;
 	public GameManager gameManager;
 	public ControllerManager controller;
+	public CinemachineVirtualCamera peekingCam;
 
 	public string ID;
 
@@ -21,6 +23,10 @@ public class SetUpNetwork : NetworkBehaviour
 			{
 				componentsToDisable[i].enabled = false;
 			}
+		}
+		else
+		{
+			peekingCam.enabled = false;
 		}
 	}
 

@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scene/LDTestMulti.unity
     guid: 22a35ac6707a13949906b6dcb0c2e436
+  - enabled: 0
+    path: Assets/Scene/Lobby.unity
+    guid: 301c9de438ca9c1489315d18e91c499f
   - enabled: 1
     path: Assets/Scene/Scene_Presentation_Lug.unity
     guid: fdf517938c865504994a0df6ce7948e0

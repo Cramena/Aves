@@ -4,6 +4,7 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.PostProcessing;
 using UnityEngine.Networking;
+using UnityEngine.Networking.Match;
 
 public class ControllerManager : NetworkBehaviour
 {
@@ -11,7 +12,23 @@ public class ControllerManager : NetworkBehaviour
 	public x360_Gamepad gamepad;
 	private GamepadManager manager;
 
+	public BirdScriptableObject sobuProfile;
+	public BirdScriptableObject fanaProfile;
+	
 	public SetUpNetwork network;
+	private NetworkManager networkManager;
+	public LensesManager lense;
+	public TrailRenderer trail;
+	public AudioSource source;
+	public AudioSource songSource;
+
+
+	public AudioClip hit;
+	public AudioClip flap;
+	public AudioClip boost;
+	public AudioClip slow;
+
+	public AudioClip sing;
 
 	public SetUpNetwork player;
 	public CinemachineFreeLook mainCam;
@@ -33,8 +50,7 @@ public class ControllerManager : NetworkBehaviour
 	[Header("Speed variables")]
 	[Space]
 
-	[SerializeField]
-	float speed = 5.0f;
+	public float speed = 5.0f;
 	[Tooltip("The speed at which speed is sped up.")]
 	[Range(0.01f, 100)]
 	public float acceleration = 15.0f;
@@ -55,6 +71,7 @@ public class ControllerManager : NetworkBehaviour
 	public float turningSlowingAmount = 3;
 	float previousSpeed = 5.0f;
 	float accelerationModifiyer;
+	public float deceleration = 2;
 	float speedModifiyer;
 
 	[Space]
@@ -122,17 +139,56 @@ public class ControllerManager : NetworkBehaviour
 	public bool isSinging;
 	public float wrongSingTimer;
 	public bool songIsWrong;
+	//bool otherLenseActivated;
 
     void Start()
 	{
 		//gameManager.AddPlayer (this);
+		trail.enabled = false;
 		manager = GamepadManager.Instance;
 		gamepad = manager.GetGamepad(playerIndex);
 		rigidbody = GetComponent<Rigidbody>();
 		song.SetActive(false);
 		InitializeVariables();
-        Camera.main.GetComponent<LightManager>().CraneOrOwlLight();
+		networkManager = NetworkManager.singleton;
+		print("Player number : " + GetComponent<NetworkIdentity>().netId.ToString());
+		InitializeProfile();
+		//if (GetComponent<NetworkIdentity>().netId.ToString() == "3")
+		//{
+		//	lense.isCrane = true;
+		//}
+        //Camera.main.GetComponent<LightManager>().CraneOrOwlLight();
     }
+
+	void InitializeProfile()
+	{
+		if (GetComponent<NetworkIdentity>().netId.ToString() == "3")
+		{
+			lense.isCrane = true;
+			acceleration = fanaProfile.acceleration;
+			minimumSpeed = fanaProfile.minSpeed;
+			maximumSpeed = fanaProfile.maxSpeed;
+			minimumUpFov = fanaProfile.minUpFOV;
+			minimumFov = fanaProfile.minFOV;
+			maximumFov = fanaProfile.maxFOV;
+			fovSpeed = fanaProfile.fovSpeed;
+			turnSpeed = fanaProfile.turnSpeed;
+			resettingSpeed = fanaProfile.resettingSpeed;
+		}
+		else
+		{
+			lense.isCrane = false;
+			acceleration = sobuProfile.acceleration;
+			minimumSpeed = sobuProfile.minSpeed;
+			maximumSpeed = sobuProfile.maxSpeed;
+			minimumUpFov = sobuProfile.minUpFOV;
+			minimumFov = sobuProfile.minFOV;
+			maximumFov = sobuProfile.maxFOV;
+			fovSpeed = sobuProfile.fovSpeed;
+			turnSpeed = sobuProfile.turnSpeed;
+			resettingSpeed = sobuProfile.resettingSpeed;
+		}
+	}
 
 	void InitializeVariables()
 	{
@@ -142,14 +198,37 @@ public class ControllerManager : NetworkBehaviour
 
 	void Update()
 	{
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			ExitRoom();
+		}
+		else if (Input.GetKeyDown(KeyCode.LeftControl))
+		{
+			Peek();
+		}
+		//else if (Input.GetKeyDown(KeyCode.RightControl))
+		//{
+		//	if (otherLenseActivated)
+		//	{
+		//		lense.LensSwitcher("noLense");
+		//		otherLenseActivated = false;
+		//	}
+		//	else
+		//	{
+		//		lense.LensSwitcher("nightLense");
+		//		otherLenseActivated = true;
+		//	}
+		//}
+
 		UpdateSpeed();
 
-		AccelerateOrDecelerate();
 
 		if (!is2D)
 		{
 			if (!immobilised)
 			{
+				AccelerateOrDecelerate();
+
 				UpdateFOV();
 
 				UpdateChromaticAberration();
@@ -162,7 +241,7 @@ public class ControllerManager : NetworkBehaviour
 		{
 			if (isSinging)
 			{
-				if (wrongSingTimer < 1)
+				if (wrongSingTimer < 0.01)
 				{
 					wrongSingTimer += Time.deltaTime;
 				}
@@ -175,8 +254,13 @@ public class ControllerManager : NetworkBehaviour
 			if (!immobilised)
 			{
 				CheckTurnBack2D();
-				if (Input.GetAxis("RT") == 1 || Input.GetAxis("LT") == 1)
+				if ((Input.GetAxis("RT") == 1 || Input.GetAxis("LT") == 1))
 				{
+					if (!isSinging)
+					{
+						songSource.Play();
+						print("waow");
+					}
 					StartSinging();
 				}
 				else if (isSinging)
@@ -220,10 +304,9 @@ public class ControllerManager : NetworkBehaviour
 	void UpdateRotation2D()
 	{
 		Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-		if (/*Mathf.Abs (Input.GetAxis("Horizontal")) >= deadzone || Mathf.Abs (Input.GetAxis("Vertical")) >= deadzone*/ input.magnitude >= deadzone)                                    //4.5f jours de code pour en arriver là
+		if (input.magnitude >= deadzone)                                    //4.5f jours de code pour en arriver là
 		{
-			//            Vector2 input = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
-
+			input.Normalize();
 			input = input.normalized * ((input.magnitude - deadzone) / (1 - deadzone));
 
 			Quaternion turnRotation = Quaternion.Euler(Mathf.Atan2(-input.y, input.x) * 180 / Mathf.PI, 90, 0);
@@ -234,6 +317,7 @@ public class ControllerManager : NetworkBehaviour
 
 	void UpdateRotation()
 	{
+		float _turnspeed = turnSpeed * (speed - minimumSpeed + (maximumSpeed*2)) /(maximumSpeed*2);
 		eulerAngZ = transform.localEulerAngles.z;
 		if (Mathf.Abs(Input.GetAxis("Horizontal")) >= deadzone)
 		{
@@ -243,10 +327,10 @@ public class ControllerManager : NetworkBehaviour
 			}
 			else
 			{
-				zRotation = -Input.GetAxis("Horizontal") * turnSpeed * 2;
+				zRotation = -Input.GetAxis("Horizontal") * _turnspeed * 2;
 			}
 
-			Quaternion yRotator = Quaternion.AngleAxis((Input.GetAxis("Horizontal") - deadzone * Mathf.Sign(Input.GetAxis("Horizontal"))) * turnSpeed, Vector3.up);
+			Quaternion yRotator = Quaternion.AngleAxis((Input.GetAxis("Horizontal") - deadzone * Mathf.Sign(Input.GetAxis("Horizontal"))) * _turnspeed, transform.up);
 			transform.rotation = yRotator * transform.rotation;
 			Quaternion zRotator = Quaternion.AngleAxis(zRotation, transform.forward);
 			transform.rotation = zRotator * transform.rotation;
@@ -259,11 +343,11 @@ public class ControllerManager : NetworkBehaviour
 				loopingTimer = 0f;
 			}
 
-			Quaternion xRotator = Quaternion.AngleAxis(Input.GetAxis("Vertical") * turnSpeed, transform.right);
+			Quaternion xRotator = Quaternion.AngleAxis(Input.GetAxis("Vertical") * _turnspeed, transform.right);
 			Quaternion rotation = Quaternion.LookRotation(xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if ((Mathf.Abs(transform.forward.y) > 0.1f || Mathf.Sign(transform.up.y) < 0 || Mathf.Abs(transform.right.y) >= 0.1f) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone)
+		if ((transform.forward.y > 0.1f || Mathf.Sign(transform.up.y) < 0 || Mathf.Abs(transform.right.y) >= 0.1f) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone)
 		{
 			CheckResetZAngle();
 		}
@@ -330,7 +414,7 @@ public class ControllerManager : NetworkBehaviour
 		}
 		else
 		{
-			accelerationModifiyer = 2;
+			accelerationModifiyer = deceleration;
 		}
 
 		//        if (Mathf.Abs (gamepad.GetStick_L ().X) > .7f) {
@@ -347,10 +431,18 @@ public class ControllerManager : NetworkBehaviour
 	{
 		if (/*gamepad.GetTrigger_L () > deadzone*/Input.GetAxis("RT") > deadzone)
 		{
+			if (speedModifiyer != -5f)
+			{
+				source.PlayOneShot(slow);
+			}
 			speedModifiyer = -5f;
 		}
 		else if (/*gamepad.GetTrigger_R () > deadzone*/Input.GetAxis("LT") > deadzone)
 		{
+			if (speedModifiyer != 5f)
+			{
+				source.PlayOneShot(boost);
+			}
 			speedModifiyer = 5f;
 		}
 		else
@@ -392,11 +484,11 @@ public class ControllerManager : NetworkBehaviour
 		{
 			targetFOV = minimumUpFov;
 		}
-		else if (accelerationModifiyer == 1)
+		else if (accelerationModifiyer == 1 || speedModifiyer == 5f)
 		{
 			targetFOV = maximumFov;
 		}
-		else
+		else 
 		{
 			targetFOV = minimumFov;
 		}
@@ -447,11 +539,12 @@ public class ControllerManager : NetworkBehaviour
 		{
 			if (is2D)
 			{
-				print("Pressing the button");
 				gameManager.CmdCheckTransition3D("Player " + GetComponent<NetworkIdentity>().netId.ToString());
 			}
-			else if (transform.position.y > 45 && (Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone))
+			else if (transform.position.y > 50 && (Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone) && Mathf.Abs(transform.up.x) < 0.1f)
 			{
+				Debug.DrawRay(transform.position, transform.forward, Color.red, 10);
+				print("1 " + transform.rotation);
 				gameManager.CmdCheckTransition2D("Player " + GetComponent<NetworkIdentity>().netId.ToString());
 			}
 		}
@@ -459,7 +552,9 @@ public class ControllerManager : NetworkBehaviour
 
 	public void Initialize2D()
 	{
+		print("2 " + transform.rotation);
 		//if (gameManager.axis = )
+		trail.enabled = true;
 		is2D = true;
 		Camera.main.GetComponent<CameraController>().TransitionCamera2D(transform.forward, transform.position, secondCam);
 		Camera.main.GetComponent<CinemachineBrain>().enabled = false;
@@ -468,9 +563,10 @@ public class ControllerManager : NetworkBehaviour
         Quaternion final2DRotation = Quaternion.LookRotation (rightNoY, Vector2.up);
         StartCoroutine(TransitionTo2D (final2DRotation));
         */
-		Vector3 rightNoY = gameManager.axisRight;
-		Quaternion final2DRotation = Quaternion.LookRotation(gameManager.axisRight, Vector2.up);
+		Vector3 rightNoY = new Vector3(transform.right.x, 0, transform.right.z).normalized;//gameManager.axisRight;
+		Quaternion final2DRotation = Quaternion.LookRotation(rightNoY, Vector2.up);
 		StartCoroutine(TransitionTo2D(final2DRotation));
+		lense.LensSwitcher("noLense");
 	}
 
 	public void Follow2D()
@@ -490,6 +586,7 @@ public class ControllerManager : NetworkBehaviour
 	//}
 	IEnumerator TransitionTo2D(Quaternion final2DRotation)
 	{
+		print("3 " + transform.rotation);
 		immobilised = true;
 		ChromaticAberrationModel.Settings chromaticAberration = postProcess.chromaticAberration.settings;
 		float initialAberration = chromaticAberration.intensity;
@@ -525,6 +622,8 @@ public class ControllerManager : NetworkBehaviour
 
 	public void Initialize3D()
 	{
+		trail.enabled = false;
+		ResetSong();
 		is2D = false;
 		StartCoroutine(TransitionTo3D());
 	}
@@ -584,6 +683,7 @@ public class ControllerManager : NetworkBehaviour
 
 	void StopSinging()
 	{
+		songSource.Stop();
 		isSinging = false;
 		song.GetComponent<ParticleSystem>().Stop(true, ParticleSystemStopBehavior.StopEmitting);
 		wrongSingTimer = 0;
@@ -595,16 +695,85 @@ public class ControllerManager : NetworkBehaviour
 
 	void ResetSong()
 	{
+		songSource.Stop();
 		song.SetActive(false);
 		songIsWrong = false;
 		gameManager.ResetSong();
 	}
 
-	private void OnTriggerEnter (Collider other)
+	private void OnTriggerEnter(Collider other)
 	{
 		if (other.gameObject.tag == "Obstacle")
 		{
-			rigidbody.AddForce((transform.position - other.transform.position) * 1, ForceMode.Impulse);
+			//rigidbody.AddForce((transform.position - other.transform.position) * 1, ForceMode.Impulse);
+			//Vector3 _contact = other.ClosestPoint(transform.position);
+			//transform.position = transform.position + (transform.position - _contact) * 10;
+			transform.position -= transform.forward * 10;
+			
+			RaycastHit _hit;
+			if (Physics.Raycast(transform.position, transform.forward, out _hit))
+			{
+				//transform.forward = Vector3.Reflect(transform.forward, _hit.normal);
+				source.PlayOneShot(hit);
+				transform.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.forward, _hit.normal));
+				//StartCoroutine(Replace3D(Quaternion.LookRotation(Vector3.Reflect(transform.forward, _hit.normal)), transform.rotation));
+			}
+
+			//transform.forward = Vector3.Reflect(transform.forward, other.ClosestPointOnBounds(transform.position));
+
+			//transform.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.forward, other.contacts[0].normal));//Vector3.Reflect(transform.forward, other.contacts[0].normal);
+
+			//Replace3D(Quaternion.LookRotation(Vector3.Reflect(transform.forward, other.contacts[0].normal)), transform.rotation);
+
+			//transform.position += transform.forward * 100;
+			//rigidbody.velocity = Vector3.zero;
+		}
+	}
+
+	//IEnumerator CheckCollision()
+	//{
+	//	RaycastHit _hit;
+	//	if (Physics.Raycast(transform.position, transform.position + transform.forward * 10, out _hit))
+	//	{
+	//		Replace3D(Quaternion.LookRotation(Vector3.Reflect(transform.forward, _hit.normal)), transform.rotation);
+	//	}
+	//	yield 
+	//}
+
+	IEnumerator Replace3D(Quaternion _endRotation, Quaternion _initialRotation)
+	{
+		immobilised = true;
+		float counter = 0;
+		while (counter < 1)
+		{
+			transform.rotation = Quaternion.Slerp(_initialRotation, _endRotation, counter);
+			counter += Time.fixedDeltaTime * 10;
+			yield return new WaitForSeconds(Time.fixedDeltaTime * 10);
+		}
+		transform.rotation = _endRotation;
+		immobilised = false;
+	}
+
+	void ExitRoom()
+	{
+		MatchInfo _matchInfo = networkManager.matchInfo;
+		networkManager.matchMaker.DropConnection(_matchInfo.networkId, _matchInfo.nodeId, 0, networkManager.OnDropConnection);
+		networkManager.StopHost();
+	}
+
+	void Peek()
+	{
+		CinemachineVirtualCamera _peekCam = GameObject.Find("PeekingCam").GetComponent<CinemachineVirtualCamera>();
+		if (_peekCam != null)
+		{
+			if (_peekCam.Priority == 1)
+			{
+				_peekCam.Priority = 15;
+			}
+			else
+			{
+				_peekCam.Priority = 1;
+			}
 		}
 	}
 
