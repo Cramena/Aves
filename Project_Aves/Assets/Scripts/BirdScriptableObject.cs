@@ -19,4 +19,5 @@ public class BirdScriptableObject : ScriptableObject {
 	public float turnSpeed;
 	public float resettingSpeed;
 
+	public GameObject model;
 }

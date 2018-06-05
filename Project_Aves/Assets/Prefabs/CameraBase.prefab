@@ -47,8 +47,8 @@ GameObject:
   - component: {fileID: 114041198061202708}
   - component: {fileID: 114519320414864352}
   - component: {fileID: 45237724648261566}
-  - component: {fileID: 82193169606776930}
   - component: {fileID: 82781077261573226}
+  - component: {fileID: 82955902373153382}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -199,7 +199,7 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1539082179010548}
   m_Enabled: 1
---- !u!82 &82193169606776930
+--- !u!82 &82781077261573226
 AudioSource:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -208,11 +208,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_audioClip: {fileID: 8300000, guid: f858f3d5526a0e8469644b357b654f4c, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.54
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -294,7 +294,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!82 &82781077261573226
+--- !u!82 &82955902373153382
 AudioSource:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -303,11 +303,11 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
-  m_Volume: 1
+  m_audioClip: {fileID: 8300000, guid: c99e5d649ef5f3e4bb382b20b6b2a52b, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.54
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -508,15 +508,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 0}
   secondCam: {fileID: 0}
-  source: {fileID: 82193169606776930}
-  musicSource: {fileID: 82781077261573226}
-  figureStart: {fileID: 8300000, guid: f6c2b3a0be2a86f4b8e37b1fe45fa566, type: 3}
-  figureCancel: {fileID: 8300000, guid: 5afa1998e48baff4182df269e537136d, type: 3}
-  figureComplete: {fileID: 8300000, guid: ca3cdbd9d6e31d24aaf8540130e7d257, type: 3}
-  calmAmbience: {fileID: 8300000, guid: c99e5d649ef5f3e4bb382b20b6b2a52b, type: 3}
-  stormAmbience: {fileID: 8300000, guid: f858f3d5526a0e8469644b357b654f4c, type: 3}
+  stormSource: {fileID: 82781077261573226}
+  calmSource: {fileID: 82955902373153382}
   distance2D: 100
-  transitionSpeed: 4
+  transitionSpeed: 2
   direction2D: {x: 0, y: 0, z: 0}
 --- !u!124 &124374176759398300
 Behaviour:

@@ -21,3 +21,4 @@ MonoBehaviour:
   maxFOV: 55
   turnSpeed: 2.2
   resettingSpeed: 40
+  model: {fileID: 100306, guid: cc8910cf32818d04b9394dbd0ea0129e, type: 3}

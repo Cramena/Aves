@@ -8,11 +8,8 @@ public class CameraController : MonoBehaviour
 	public GameManager gameManager;
 	public GameManager secondCam;
 
-	public AudioSource musicSource;
-
-	public AudioClip calmAmbience;
-	public AudioClip stormAmbience;
-
+	public AudioSource stormSource;
+	public AudioSource calmSource;
 
 	public float distance2D = 50;
 	public float transitionSpeed = 4;
@@ -29,7 +26,7 @@ public class CameraController : MonoBehaviour
 	void Start()
 	{
 		gameManager = GameObject.Find("GameManager1").GetComponent<GameManager>();
-		musicSource.PlayOneShot(stormAmbience);
+		stormSource.Play();
 	}
 
 	void FixedUpdate()

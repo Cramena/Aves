@@ -14,10 +14,11 @@ MonoBehaviour:
   acceleration: 24
   deceleration: 2
   minSpeed: 23
-  maxSpeed: 48
+  maxSpeed: 42
   fovSpeed: 0.03
   minUpFOV: 20
   minFOV: 40
   maxFOV: 55
   turnSpeed: 3
   resettingSpeed: 70
+  model: {fileID: 1561549198362776, guid: ff37b7a34c05e8e42bc7c3ba570feeb6, type: 2}

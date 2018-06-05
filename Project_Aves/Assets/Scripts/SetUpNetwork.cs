@@ -11,6 +11,8 @@ public class SetUpNetwork : NetworkBehaviour
 	public GameManager gameManager;
 	public ControllerManager controller;
 	public CinemachineVirtualCamera peekingCam;
+	public GameObject modelSobu;
+	public GameObject modelFana;
 
 	public string ID;
 
@@ -23,10 +25,12 @@ public class SetUpNetwork : NetworkBehaviour
 			{
 				componentsToDisable[i].enabled = false;
 			}
+			modelSobu.SetActive(false);
 		}
 		else
 		{
 			peekingCam.enabled = false;
+			modelFana.SetActive(false);
 		}
 	}
 

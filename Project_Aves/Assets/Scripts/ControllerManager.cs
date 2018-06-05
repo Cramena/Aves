@@ -174,6 +174,7 @@ public class ControllerManager : NetworkBehaviour
 			fovSpeed = fanaProfile.fovSpeed;
 			turnSpeed = fanaProfile.turnSpeed;
 			resettingSpeed = fanaProfile.resettingSpeed;
+			print("I am Fana");
 		}
 		else
 		{
@@ -187,6 +188,7 @@ public class ControllerManager : NetworkBehaviour
 			fovSpeed = sobuProfile.fovSpeed;
 			turnSpeed = sobuProfile.turnSpeed;
 			resettingSpeed = sobuProfile.resettingSpeed;
+			print("I am Sobu");
 		}
 	}
 
@@ -347,7 +349,7 @@ public class ControllerManager : NetworkBehaviour
 			Quaternion rotation = Quaternion.LookRotation(xRotator * transform.forward, transform.up);
 			transform.rotation = rotation;
 		}
-		if ((transform.forward.y > 0.1f || Mathf.Sign(transform.up.y) < 0 || Mathf.Abs(transform.right.y) >= 0.1f) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone && speedModifiyer != 5f)
+		if ((transform.forward.y > 0.1f || Mathf.Sign(transform.up.y) < 0 || Mathf.Abs(transform.right.y) >= 0.1f) && Mathf.Abs(Input.GetAxis("Horizontal")) < deadzone && Mathf.Abs(Input.GetAxis("Vertical")) < deadzone && (speedModifiyer != 5f || Mathf.Sign(transform.up.y) < 0))
 		{
 			CheckResetZAngle();
 		}
@@ -434,7 +436,10 @@ public class ControllerManager : NetworkBehaviour
 			if (speedModifiyer != -5f)
 			{
 				source.PlayOneShot(slow);
-				animator.SetBool("KebabBool", false);
+				if (!lense.isCrane)
+				{
+					animator.SetBool("KebabBool", false);
+				}
 			}
 			speedModifiyer = -5f;
 		}
@@ -443,13 +448,16 @@ public class ControllerManager : NetworkBehaviour
 			if (speedModifiyer != 5f)
 			{
 				source.PlayOneShot(boost);
-				animator.SetBool("KebabBool", true);
+				if (!lense.isCrane)
+				{
+					animator.SetBool("KebabBool", true);
+				}
 			}
 			speedModifiyer = 5f;
 		}
 		else
 		{
-			if (speedModifiyer != 0)
+			if (speedModifiyer != 0 && !lense.isCrane)
 			{
 				animator.SetBool("KebabBool", false);
 			}
